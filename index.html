@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>社保基金监督考试题库</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f5f6fa; color: #333; line-height: 1.5; min-height: 100vh;
+        }
+        .container { max-width: 480px; margin: 0 auto; min-height: 100vh; background: #f5f6fa; position: relative; }
+
+        /* 首页 */
+        .home-header {
+            background: #1890ff; color: #fff; padding: 28px 20px; text-align: center;
+        }
+        .home-header h1 { font-size: 20px; margin-bottom: 4px; }
+        .home-header p { font-size: 12px; opacity: 0.9; }
+
+        .section-title {
+            font-size: 14px; color: #666; padding: 16px 16px 8px; font-weight: 500;
+        }
+
+        .subject-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 16px 12px;
+        }
+        .subject-item {
+            background: #fff; border-radius: 10px; padding: 16px 12px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.05); cursor: pointer; text-align: center;
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+        .subject-item:active { transform: scale(0.98); }
+        .subject-item .icon { font-size: 26px; margin-bottom: 6px; }
+        .subject-item .name { font-size: 14px; font-weight: 600; color: #333; }
+        .subject-item .count { font-size: 11px; color: #999; margin-top: 4px; }
+
+        .menu-grid {
+            display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px;
+            padding: 0 16px 16px;
+        }
+        .menu-item {
+            background: #fff; border-radius: 10px; padding: 14px 6px;
+            text-align: center; box-shadow: 0 1px 4px rgba(0,0,0,0.05); cursor: pointer;
+        }
+        .menu-item .icon { font-size: 22px; margin-bottom: 4px; }
+        .menu-item .label { font-size: 12px; color: #333; font-weight: 500; }
+        .menu-item .sub { font-size: 11px; color: #888; margin-top: 2px; }
+
+        /* 顶部导航 */
+        .nav-bar {
+            background: #fff; padding: 12px 16px; display: flex; align-items: center;
+            border-bottom: 1px solid #eee; position: sticky; top: 0; z-index: 10;
+        }
+        .nav-bar .back { font-size: 20px; color: #666; cursor: pointer; padding-right: 12px; }
+        .nav-bar h2 { flex: 1; font-size: 17px; text-align: center; margin-right: 32px; }
+        .nav-bar .right-btn { font-size: 13px; color: #1890ff; cursor: pointer; }
+
+        /* 练习页面 */
+        .progress-bar { height: 4px; background: #e8e8e8; margin-bottom: 16px; }
+        .progress-bar .fill { height: 100%; background: #1890ff; transition: width 0.3s; }
+
+        .question-card {
+            background: #fff; margin: 0 16px 16px; border-radius: 12px;
+            padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .question-card .type-tag {
+            display: inline-block; font-size: 12px; padding: 2px 8px;
+            border-radius: 4px; margin-bottom: 12px;
+        }
+        .type-tag.single { background: #e6f7ff; color: #1890ff; }
+        .type-tag.multi { background: #f6ffed; color: #52c41a; }
+        .type-tag.judge { background: #fff7e6; color: #fa8c16; }
+        .question-card .question-text { font-size: 15px; line-height: 1.7; margin-bottom: 16px; }
+
+        .option-item {
+            border: 1px solid #e8e8e8; border-radius: 8px; padding: 12px 16px;
+            margin-bottom: 10px; cursor: pointer; display: flex; align-items: flex-start;
+            transition: all 0.2s;
+        }
+        .option-item .opt-label {
+            width: 24px; height: 24px; border-radius: 50%; border: 1px solid #d9d9d9;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 12px; color: #999; margin-right: 10px; flex-shrink: 0;
+        }
+        .option-item.selected { border-color: #1890ff; background: #e6f7ff; }
+        .option-item.selected .opt-label { background: #1890ff; color: #fff; border-color: #1890ff; }
+        .option-item.correct { border-color: #52c41a; background: #f6ffed; }
+        .option-item.correct .opt-label { background: #52c41a; color: #fff; border-color: #52c41a; }
+        .option-item.wrong { border-color: #ff4d4f; background: #fff1f0; }
+        .option-item.wrong .opt-label { background: #ff4d4f; color: #fff; border-color: #ff4d4f; }
+        .option-item.disabled { pointer-events: none; }
+
+        .btn-area { padding: 0 16px 24px; display: flex; gap: 10px; }
+        .btn-next, .btn-prev {
+            flex: 1; background: #1890ff; color: #fff;
+            border: none; padding: 14px; border-radius: 8px; font-size: 15px;
+            cursor: pointer; text-align: center;
+        }
+        .btn-prev { background: #fff; color: #666; border: 1px solid #d9d9d9; }
+        .btn-next:disabled { background: #bfbfbf; cursor: not-allowed; }
+
+        /* 解析 */
+        .analysis-box {
+            background: #f6ffed; border: 1px solid #b7eb8f;
+            border-radius: 8px; padding: 16px; margin-top: 16px;
+        }
+        .analysis-box .title { color: #52c41a; font-weight: 600; font-size: 14px; margin-bottom: 8px; }
+        .analysis-box .content { font-size: 14px; color: #333; line-height: 1.6; }
+        .analysis-box .answer { color: #1890ff; font-weight: 500; }
+
+        /* 结果页 */
+        .result-header {
+            background: #fff; text-align: center; padding: 32px 20px 28px;
+            margin: 16px; border-radius: 16px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+        .result-score-wrap { position: relative; display: inline-block; margin-bottom: 8px; }
+        .result-header .score { font-size: 64px; font-weight: 800; line-height: 1; }
+        .result-header .score.excellent { color: #52c41a; }
+        .result-header .score.good { color: #1890ff; }
+        .result-header .score.pass { color: #faad14; }
+        .result-header .score.fail { color: #ff4d4f; }
+        .result-header .score-label { font-size: 14px; color: #888; margin-top: 4px; }
+        .result-evaluate {
+            display: inline-block; margin-top: 12px; padding: 4px 16px;
+            border-radius: 20px; font-size: 13px; font-weight: 500;
+        }
+        .result-evaluate.excellent { background: #f6ffed; color: #52c41a; }
+        .result-evaluate.good { background: #e6f7ff; color: #1890ff; }
+        .result-evaluate.pass { background: #fff7e6; color: #faad14; }
+        .result-evaluate.fail { background: #fff1f0; color: #ff4d4f; }
+        .result-stats { display: flex; justify-content: center; gap: 32px; margin-top: 24px; }
+        .result-stats .item { text-align: center; }
+        .result-stats .num { font-size: 22px; font-weight: 700; color: #333; }
+        .result-stats .label { font-size: 12px; color: #999; margin-top: 4px; }
+
+        .result-detail-card {
+            background: #fff; margin: 0 16px 12px; border-radius: 12px;
+            padding: 16px 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        .result-detail-card .row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 10px 0; border-bottom: 1px solid #f0f0f0;
+        }
+        .result-detail-card .row:last-child { border-bottom: none; }
+        .result-detail-card .label { font-size: 14px; color: #666; }
+        .result-detail-card .value { font-size: 14px; font-weight: 600; color: #333; }
+
+        .btn-primary {
+            display: block; width: 100%; background: #1890ff; color: #fff;
+            border: none; padding: 14px; border-radius: 10px; font-size: 15px;
+            cursor: pointer; text-align: center; font-weight: 500;
+            transition: background 0.2s, transform 0.15s;
+        }
+        .btn-primary:active { transform: scale(0.98); }
+        .btn-secondary {
+            display: block; width: 100%; background: #fff; color: #333;
+            border: 1px solid #d9d9d9; padding: 14px; border-radius: 10px;
+            font-size: 15px; cursor: pointer; text-align: center; font-weight: 500;
+            transition: background 0.2s, transform 0.15s;
+        }
+        .btn-secondary:active { transform: scale(0.98); }
+        .btn-group { display: flex; gap: 12px; padding: 0 16px 24px; }
+        .btn-group .btn-primary, .btn-group .btn-secondary { flex: 1; }
+
+        /* 列表 */
+        .list-item {
+            background: #fff; margin: 0 16px 10px; border-radius: 10px;
+            padding: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); cursor: pointer;
+        }
+        .list-item .q-text { font-size: 14px; color: #333; margin-bottom: 8px; line-height: 1.5; }
+        .list-item .meta { font-size: 12px; color: #999; }
+        .list-item .meta span { margin-right: 10px; }
+        .empty-state { text-align: center; padding: 60px 20px; color: #999; }
+        .empty-state .icon { font-size: 48px; margin-bottom: 12px; }
+
+        /* 考试倒计时 */
+        .timer {
+            position: fixed; top: 12px; right: 16px; background: #fff;
+            padding: 4px 12px; border-radius: 20px; font-size: 14px;
+            font-weight: 600; color: #ff4d4f; box-shadow: 0 2px 8px rgba(0,0,0,0.1); z-index: 20;
+        }
+        .timer.warning { color: #ff4d4f; animation: pulse 1s infinite; }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+
+        /* 工具栏 */
+        .toolbar {
+            display: flex; justify-content: space-between;
+            padding: 0 16px 12px; font-size: 13px; color: #666;
+        }
+        .toolbar span { cursor: pointer; display: flex; align-items: center; gap: 4px; }
+
+        /* 题号导航 */
+        .q-nav-bar {
+            display: flex; align-items: center; gap: 8px;
+            padding: 0 16px 12px; font-size: 13px; color: #666;
+        }
+        .q-nav-bar .q-nav-btn {
+            background: #f0f0f0; border: none; border-radius: 4px;
+            padding: 4px 10px; font-size: 12px; color: #666; cursor: pointer;
+        }
+        .q-nav-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5); z-index: 90;
+            display: flex; align-items: flex-end; justify-content: center;
+        }
+        .q-nav-panel {
+            background: #fff; border-radius: 16px 16px 0 0;
+            width: 100%; max-width: 480px; max-height: 70vh;
+            overflow-y: auto; padding: 20px 16px 24px;
+        }
+        .q-nav-panel .title {
+            font-size: 16px; font-weight: 600; color: #333;
+            margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;
+        }
+        .q-nav-panel .close-btn {
+            font-size: 20px; color: #999; cursor: pointer; line-height: 1;
+        }
+        .q-nav-grid {
+            display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px;
+        }
+        .q-nav-item {
+            aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+            border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer;
+            border: 1px solid #e8e8e8; background: #fff; color: #666;
+            transition: all 0.15s;
+        }
+        .q-nav-item.answered { background: #e6f7ff; border-color: #1890ff; color: #1890ff; }
+        .q-nav-item.current { background: #1890ff; border-color: #1890ff; color: #fff; }
+        .q-nav-item.current.answered { background: #1890ff; color: #fff; }
+        .q-nav-stats {
+            display: flex; gap: 16px; margin-bottom: 16px; font-size: 12px; color: #888;
+        }
+        .q-nav-stats span { display: flex; align-items: center; gap: 4px; }
+        .q-nav-stats .dot {
+            width: 8px; height: 8px; border-radius: 50%; display: inline-block;
+        }
+        .q-nav-stats .dot.done { background: #1890ff; }
+        .q-nav-stats .dot.undo { background: #e8e8e8; border: 1px solid #ccc; }
+
+        .hidden { display: none !important; }
+
+        /* 模式选择 */
+        .mode-select {
+            background: #fff; margin: 12px 16px; border-radius: 12px;
+            padding: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .mode-select h3 { font-size: 15px; margin-bottom: 12px; }
+        .mode-btn {
+            display: block; width: 100%; background: #f5f5f5; border: none;
+            padding: 14px; border-radius: 8px; margin-bottom: 10px; font-size: 15px;
+            cursor: pointer; text-align: left; display: flex; align-items: center; gap: 10px;
+        }
+        .mode-btn:active { background: #e8e8e8; }
+        .mode-btn .emoji { font-size: 20px; }
+
+        /* 弹窗 */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5); display: flex;
+            align-items: center; justify-content: center; z-index: 100;
+        }
+        .modal-box {
+            background: #fff; border-radius: 12px; padding: 24px;
+            width: 300px; text-align: center;
+        }
+        .modal-box h3 { font-size: 18px; margin-bottom: 12px; }
+        .modal-box p { font-size: 14px; color: #666; margin-bottom: 20px; }
+        .modal-btns { display: flex; gap: 12px; }
+        .modal-btns button { flex: 1; padding: 12px; border-radius: 8px; border: none; font-size: 14px; cursor: pointer; }
+        .modal-btns .cancel { background: #f5f5f5; color: #333; }
+        .modal-btns .confirm { background: #1890ff; color: #fff; }
+    </style>
+</head>
+<body>
+<div class="container">
+
+<!-- 首页 -->
+<div id="page-home">
+    <div class="home-header">
+        <h1>社保基金监督考试题库</h1>
+        <p>江西省基金监督工作人员学习平台</p>
+    </div>
+
+    <div class="section-title">选择科目</div>
+    <div class="subject-grid" id="subject-grid"></div>
+
+    <div class="section-title">功能菜单</div>
+    <div class="menu-grid">
+        <div class="menu-item" onclick="goWrongBook()">
+            <div class="icon">📋</div>
+            <div class="label">错题本</div>
+            <div class="sub" id="wrong-count">0</div>
+        </div>
+        <div class="menu-item" onclick="goFavorites()">
+            <div class="icon">⭐</div>
+            <div class="label">收藏夹</div>
+            <div class="sub" id="fav-count">0</div>
+        </div>
+        <div class="menu-item" onclick="goHistory()">
+            <div class="icon">📊</div>
+            <div class="label">练习记录</div>
+            <div class="sub">查看</div>
+        </div>
+        <div class="menu-item" onclick="showAbout()">
+            <div class="icon">ℹ️</div>
+            <div class="label">关于</div>
+            <div class="sub">说明</div>
+        </div>
+    </div>
+</div>
+
+<!-- 模式选择 -->
+<div id="page-mode" class="hidden">
+    <div class="nav-bar">
+        <span class="back" onclick="goHome()">←</span>
+        <h2 id="mode-title">选择练习模式</h2>
+    </div>
+    <div class="mode-select">
+        <h3>练习模式</h3>
+        <button class="mode-btn" onclick="startPractice('order')">
+            <span class="emoji">📚</span>
+            <div>
+                <div style="font-weight:600">顺序练习</div>
+                <div style="font-size:12px;color:#888">按题目顺序逐一学习</div>
+            </div>
+        </button>
+        <button class="mode-btn" onclick="startPractice('random')">
+            <span class="emoji">🎲</span>
+            <div>
+                <div style="font-weight:600">随机刷题</div>
+                <div style="font-size:12px;color:#888">打乱顺序随机抽题</div>
+            </div>
+        </button>
+    </div>
+    <div class="mode-select">
+        <h3>考试模式</h3>
+        <button class="mode-btn" onclick="startExam()">
+            <span class="emoji">⏱️</span>
+            <div>
+                <div style="font-weight:600">模拟考试</div>
+                <div style="font-size:12px;color:#888">20题限时20分钟，模拟真实考试</div>
+            </div>
+        </button>
+    </div>
+</div>
+
+<!-- 练习/考试页面 -->
+<div id="page-practice" class="hidden">
+    <div class="nav-bar">
+        <span class="back" onclick="quitConfirm()">←</span>
+        <h2 id="practice-title">顺序练习</h2>
+        <span class="right-btn" onclick="submitExam()" id="submit-btn">交卷</span>
+    </div>
+    <div class="progress-bar"><div class="fill" id="progress-fill" style="width:0%"></div></div>
+
+    <div class="q-nav-bar">
+        <span>第 <b id="q-current-num">1</b> / <b id="q-total-num">10</b> 题</span>
+        <button class="q-nav-btn" onclick="toggleQuestionNav()">📋 题目导航</button>
+    </div>
+
+    <div class="question-card">
+        <div class="type-tag" id="q-type">单选题</div>
+        <div class="question-text" id="q-text"></div>
+        <div id="q-options"></div>
+        <div class="analysis-box hidden" id="q-analysis">
+            <div class="title">答案解析</div>
+            <div class="content">
+                正确答案：<span class="answer" id="analysis-answer"></span><br>
+                <span id="analysis-text"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="toolbar">
+        <span onclick="toggleFavorite()" id="fav-btn">⭐ 收藏</span>
+        <span onclick="showAnalysis()" id="analysis-btn">💡 查看解析</span>
+    </div>
+
+    <div class="btn-area">
+        <button class="btn-prev" id="prev-btn" onclick="prevQuestion()">上一题</button>
+        <button class="btn-next" id="next-btn" onclick="nextQuestion()" disabled>下一题</button>
+    </div>
+</div>
+
+<!-- 题目导航面板 -->
+<div id="q-nav-overlay" class="q-nav-overlay hidden" onclick="hideQuestionNav(event)">
+    <div class="q-nav-panel" onclick="event.stopPropagation()">
+        <div class="title">
+            <span>题目导航</span>
+            <span class="close-btn" onclick="hideQuestionNavDirect()">&times;</span>
+        </div>
+        <div class="q-nav-stats">
+            <span><span class="dot done"></span>已答</span>
+            <span><span class="dot undo"></span>未答</span>
+        </div>
+        <div class="q-nav-grid" id="q-nav-grid"></div>
+    </div>
+</div>
+
+<!-- 结果页 -->
+<div id="page-result" class="hidden">
+    <div class="nav-bar">
+        <span class="back" onclick="goHome()">←</span>
+        <h2>练习结果</h2>
+    </div>
+    <div class="result-header">
+        <div class="result-score-wrap">
+            <div class="score" id="result-score">0</div>
+        </div>
+        <div class="score-label">得分</div>
+        <div class="result-evaluate" id="result-evaluate">继续加油</div>
+        <div class="result-stats">
+            <div class="item"><div class="num" id="result-total">0</div><div class="label">总题数</div></div>
+            <div class="item"><div class="num" id="result-correct" style="color:#52c41a">0</div><div class="label">正确</div></div>
+            <div class="item"><div class="num" id="result-wrong" style="color:#ff4d4f">0</div><div class="label">错误</div></div>
+        </div>
+    </div>
+
+    <div class="result-detail-card">
+        <div class="row">
+            <span class="label">正确率</span>
+            <span class="value" id="result-accuracy">0%</span>
+        </div>
+        <div class="row">
+            <span class="label">答题用时</span>
+            <span class="value" id="result-time">--</span>
+        </div>
+        <div class="row">
+            <span class="label">练习科目</span>
+            <span class="value" id="result-subject">--</span>
+        </div>
+        <div class="row">
+            <span class="label">练习模式</span>
+            <span class="value" id="result-mode">--</span>
+        </div>
+    </div>
+
+    <div class="btn-group">
+        <button class="btn-secondary" onclick="goHome()">返回首页</button>
+        <button class="btn-primary" onclick="reviewWrong()">回顾错题</button>
+    </div>
+</div>
+
+<!-- 错题本 -->
+<div id="page-wrong" class="hidden">
+    <div class="nav-bar"><span class="back" onclick="goHome()">←</span><h2>错题本</h2></div>
+    <div id="wrong-list"></div>
+</div>
+
+<!-- 收藏夹 -->
+<div id="page-fav" class="hidden">
+    <div class="nav-bar"><span class="back" onclick="goHome()">←</span><h2>收藏夹</h2></div>
+    <div id="fav-list"></div>
+</div>
+
+<!-- 练习记录 -->
+<div id="page-history" class="hidden">
+    <div class="nav-bar"><span class="back" onclick="goHome()">←</span><h2>练习记录</h2></div>
+    <div id="history-list"></div>
+</div>
+
+<!-- 关于 -->
+<div id="page-about" class="hidden">
+    <div class="nav-bar"><span class="back" onclick="goHome()">←</span><h2>关于</h2></div>
+    <div style="padding:24px 20px">
+        <div style="background:#fff;border-radius:12px;padding:24px">
+            <h3 style="margin-bottom:16px">社保基金监督考试题库</h3>
+            <p style="font-size:14px;color:#666;line-height:1.8;margin-bottom:16px">
+                本系统面向江西省社保基金监督工作人员，提供全险种基金监督科目的在线学习与模拟考试功能。
+            </p>
+            <p style="font-size:14px;color:#666;line-height:1.8;margin-bottom:16px">
+                <b>使用说明：</b><br>
+                1. 首页选择科目，点击"开始练习"<br>
+                2. 顺序练习按题库顺序逐题学习<br>
+                3. 随机刷题打乱顺序巩固知识<br>
+                4. 模拟考试限时答题，模拟真实场景<br>
+                5. 答错的题目自动收录到错题本<br>
+                6. 可收藏重点题目便于复习<br>
+                7. 所有数据保存在本地浏览器中
+            </p>
+            <p style="font-size:13px;color:#999">版本：v2.0 | 数据保存在本机</p>
+        </div>
+    </div>
+</div>
+
+<!-- 退出确认弹窗 -->
+<div id="modal-quit" class="modal-overlay hidden" onclick="hideModal(event)">
+    <div class="modal-box">
+        <h3>确认退出？</h3>
+        <p>退出后当前进度将保存到练习记录</p>
+        <div class="modal-btns">
+            <button class="cancel" onclick="hideModalDirect('modal-quit')">继续答题</button>
+            <button class="confirm" onclick="quitPractice()">确认退出</button>
+        </div>
+    </div>
+</div>
+
+<!-- 交卷确认弹窗 -->
+<div id="modal-submit" class="modal-overlay hidden" onclick="hideModal(event)">
+    <div class="modal-box">
+        <h3>确认交卷？</h3>
+        <p>交卷后将无法再修改答案</p>
+        <div class="modal-btns">
+            <button class="cancel" onclick="hideModalDirect('modal-submit')">继续答题</button>
+            <button class="confirm" onclick="confirmSubmit()">确认交卷</button>
+        </div>
+    </div>
+</div>
+
+</div>
+
+<script>
+// ===================== 科目配置 =====================
+const subjects = {
+    pension: { name: '养老保险基金监督', icon: '👴', desc: '征缴、待遇、财务监督' },
+    unemployment: { name: '失业保险基金监督', icon: '💼', desc: '失业保险金发放、基金监督' },
+    injury: { name: '工伤保险基金监督', icon: '🛡️', desc: '工伤认定、待遇支付监督' },
+    general: { name: '综合法规与监督实务', icon: '📜', desc: '社保法规、监督方法、内控' }
+};
+
+// ===================== 题库数据 =====================
+const questionBank = {
+    pension: [
+        { id:'p1', type:'single', typeName:'单选题', question:'根据《社会保险法》规定，基本养老保险基金由（ ）组成。', options:['用人单位缴费','个人缴费','政府补贴','以上都是'], answer:[3], analysis:'《社会保险法》第十一条规定，基本养老保险基金由用人单位和个人缴费以及政府补贴等组成。' },
+        { id:'p2', type:'single', typeName:'单选题', question:'企业养老保险费单位缴费比例目前为（ ）。', options:['20%','18%','16%','14%'], answer:[2], analysis:'根据国办发〔2019〕13号文件，自2019年5月1日起，城镇职工基本养老保险单位缴费比例降至16%。' },
+        { id:'p3', type:'single', typeName:'单选题', question:'养老保险待遇领取资格认证周期为（ ）个月。', options:['3','6','12','24'], answer:[2], analysis:'根据相关规定，养老保险待遇领取资格认证周期为12个月，超过12个月未认证将暂停发放待遇。' },
+        { id:'p4', type:'single', typeName:'单选题', question:'基本养老保险个人账户记账利率由（ ）确定并公布。', options:['省级人社部门','省级财政部门','国务院人社部门','国务院财政部门'], answer:[2], analysis:'《社会保险法》规定，基本养老保险个人账户记账利率由国务院社会保险行政部门确定并公布。' },
+        { id:'p5', type:'multi', typeName:'多选题', question:'养老保险基金监督的主要内容应包括（ ）。', options:['基金征缴情况','基金支付情况','基金管理情况','基金投资运营情况'], answer:[0,1,2,3], analysis:'养老保险基金监督应涵盖基金征缴、支付、管理和投资运营全链条环节。' },
+        { id:'p6', type:'multi', typeName:'多选题', question:'下列属于养老保险基金收入项目的有（ ）。', options:['基本养老保险费收入','财政补贴收入','利息收入','转移收入'], answer:[0,1,2,3], analysis:'养老保险基金收入包括基本养老保险费收入、财政补贴收入、利息收入、转移收入等。' },
+        { id:'p7', type:'multi', typeName:'多选题', question:'养老保险待遇支付的监督重点包括（ ）。', options:['待遇资格审核','待遇标准核定','待遇发放及时性','重复领取核查'], answer:[0,1,2,3], analysis:'待遇支付监督应覆盖资格审核、标准核定、发放及时性和重复领取核查等关键环节。' },
+        { id:'p8', type:'judge', typeName:'判断题', question:'养老保险基金可以用于平衡一般公共预算。', options:['正确','错误'], answer:[1], analysis:'《社会保险法》第六十九条规定，社会保险基金不得违规投资运营，不得用于平衡其他政府预算。' },
+        { id:'p9', type:'judge', typeName:'判断题', question:'个人死亡的，个人账户余额可以继承。', options:['正确','错误'], answer:[0], analysis:'《社会保险法》第十四条规定，个人死亡的，个人账户余额可以继承。' },
+        { id:'p10', type:'judge', typeName:'判断题', question:'对同一参保人，可以同时领取企业职工基本养老保险和城乡居民基本养老保险待遇。', options:['正确','错误'], answer:[1], analysis:'根据相关规定，同一参保人不能同时领取两种基本养老保险待遇，重复领取的应予清理。' }
+    ],
+    unemployment: [
+        { id:'u1', type:'single', typeName:'单选题', question:'失业保险费费率目前阶段性降低至（ ）。', options:['0.5%','1%','1.5%','2%'], answer:[1], analysis:'根据阶段性降低失业保险费率政策，失业保险总费率目前阶段性降低至1%（单位和个人合计）。' },
+        { id:'u2', type:'single', typeName:'单选题', question:'失业人员领取失业保险金的期限最长不超过（ ）个月。', options:['12','18','24','36'], answer:[2], analysis:'《社会保险法》第四十六条规定，失业人员失业前用人单位和本人累计缴费满十年以上的，领取失业保险金的期限最长为二十四个月。' },
+        { id:'u3', type:'single', typeName:'单选题', question:'失业保险金的标准由省、自治区、直辖市人民政府确定，不得低于（ ）。', options:['当地最低工资标准','城市居民最低生活保障标准','当地平均工资的60%','当地平均工资的40%'], answer:[1], analysis:'《社会保险法》第四十七条规定，失业保险金的标准不得低于城市居民最低生活保障标准。' },
+        { id:'u4', type:'single', typeName:'单选题', question:'下列哪项人员不属于失业保险参保范围？', options:['城镇企业事业单位职工','个体工商户雇工','灵活就业人员','民办非企业单位职工'], answer:[2], analysis:'灵活就业人员目前不属于失业保险强制参保范围，部分地区试点灵活就业人员自愿参保。' },
+        { id:'u5', type:'multi', typeName:'多选题', question:'失业保险基金支出项目包括（ ）。', options:['失业保险金','医疗补助金','丧葬补助金和抚恤金','职业培训补贴'], answer:[0,1,2,3], analysis:'失业保险基金支出包括失业保险金、医疗补助金、丧葬补助金和抚恤金、职业培训补贴等。' },
+        { id:'u6', type:'multi', typeName:'多选题', question:'失业人员停止领取失业保险金的情形包括（ ）。', options:['重新就业','应征服兵役','移居境外','享受基本养老保险待遇'], answer:[0,1,2,3], analysis:'《社会保险法》第五十一条规定，失业人员出现重新就业、应征服兵役、移居境外、享受基本养老保险待遇等情形的，停止领取失业保险金。' },
+        { id:'u7', type:'multi', typeName:'多选题', question:'失业保险基金监督应重点关注（ ）。', options:['参保扩面情况','基金征缴到位情况','待遇发放合规性','稳岗返还资金使用情况'], answer:[0,1,2,3], analysis:'失业保险基金监督应覆盖参保扩面、基金征缴、待遇发放和稳岗返还资金使用等各环节。' },
+        { id:'u8', type:'judge', typeName:'判断题', question:'失业人员在领取失业保险金期间，参加职工基本医疗保险的，其应当缴纳的基本医疗保险费从失业保险基金中支付。', options:['正确','错误'], answer:[0], analysis:'《社会保险法》第四十八条规定，失业人员在领取失业保险金期间参加职工基本医疗保险，应当缴纳的基本医疗保险费从失业保险基金中支付。' },
+        { id:'u9', type:'judge', typeName:'判断题', question:'失业保险基金可以用于投资股票获取收益。', options:['正确','错误'], answer:[1], analysis:'失业保险基金投资运营应遵循安全性原则，不得违规投资股票等高风险金融产品。' },
+        { id:'u10', type:'judge', typeName:'判断题', question:'企业申请稳岗返还时，必须满足上年度未裁员或裁员率低于统筹地区城镇登记失业率控制目标的条件。', options:['正确','错误'], answer:[0], analysis:'稳岗返还政策规定，企业申请稳岗返还需满足上年度未裁员或裁员率低于统筹地区城镇登记失业率控制目标等条件。' }
+    ],
+    injury: [
+        { id:'i1', type:'single', typeName:'单选题', question:'工伤保险费由（ ）缴纳。', options:['用人单位','职工个人','用人单位和职工个人','政府财政'], answer:[0], analysis:'《社会保险法》第三十三条规定，职工应当参加工伤保险，由用人单位缴纳工伤保险费，职工不缴纳工伤保险费。' },
+        { id:'i2', type:'single', typeName:'单选题', question:'职工因工致残被鉴定为一级至四级伤残的，保留劳动关系，退出工作岗位，按月享受（ ）。', options:['一次性伤残补助金','伤残津贴','一次性工伤医疗补助金','一次性伤残就业补助金'], answer:[1], analysis:'《工伤保险条例》第三十五条规定，一级至四级伤残职工保留劳动关系，退出工作岗位，按月享受伤残津贴。' },
+        { id:'i3', type:'single', typeName:'单选题', question:'职工发生事故伤害，用人单位应当自事故伤害发生之日起（ ）日内提出工伤认定申请。', options:['15','30','60','90'], answer:[1], analysis:'《工伤保险条例》第十七条规定，用人单位应当自事故伤害发生之日起30日内提出工伤认定申请。' },
+        { id:'i4', type:'single', typeName:'单选题', question:'工伤保险基金逐步实现（ ）统筹。', options:['县级','市级','省级','全国'], answer:[2], analysis:'《工伤保险条例》第十一条规定，工伤保险基金逐步实行省级统筹。' },
+        { id:'i5', type:'multi', typeName:'多选题', question:'工伤保险基金支出项目包括（ ）。', options:['治疗工伤的医疗费用','一次性伤残补助金','伤残津贴','丧葬补助金'], answer:[0,1,2,3], analysis:'工伤保险基金支出包括治疗工伤的医疗费用、一次性伤残补助金、伤残津贴、丧葬补助金等。' },
+        { id:'i6', type:'multi', typeName:'多选题', question:'不得认定为工伤或者视同工伤的情形包括（ ）。', options:['故意犯罪','醉酒或者吸毒','自残或者自杀','在工作时间和工作岗位突发疾病死亡'], answer:[0,1,2], analysis:'《工伤保险条例》第十六条规定，故意犯罪、醉酒或吸毒、自残或自杀等情形不得认定为工伤或视同工伤。' },
+        { id:'i7', type:'multi', typeName:'多选题', question:'工伤保险基金监督的重点内容包括（ ）。', options:['工伤认定合规性','基金收支管理','待遇支付审核','协议医疗机构管理'], answer:[0,1,2,3], analysis:'工伤保险基金监督应覆盖工伤认定、基金收支、待遇支付和协议医疗机构管理等环节。' },
+        { id:'i8', type:'judge', typeName:'判断题', question:'用人单位未按规定参加工伤保险的，由社会保险行政部门责令限期参加，补缴应当缴纳的工伤保险费，并自欠缴之日起按日加收万分之五的滞纳金。', options:['正确','错误'], answer:[0], analysis:'《社会保险法》第八十六条规定，用人单位未按时足额缴纳社会保险费的，由社会保险费征收机构责令限期缴纳或补足，并自欠缴之日起按日加收万分之五的滞纳金。' },
+        { id:'i9', type:'judge', typeName:'判断题', question:'工伤职工治疗非工伤引发的疾病，享受工伤医疗待遇。', options:['正确','错误'], answer:[1], analysis:'《工伤保险条例》第三十条规定，工伤职工治疗非工伤引发的疾病，不享受工伤医疗待遇，按照基本医疗保险办法处理。' },
+        { id:'i10', type:'judge', typeName:'判断题', question:'劳动能力鉴定是指劳动功能障碍程度和生活自理障碍程度的等级鉴定。', options:['正确','错误'], answer:[0], analysis:'《工伤保险条例》第二十二条规定，劳动能力鉴定是指劳动功能障碍程度和生活自理障碍程度的等级鉴定。' }
+    ],
+    general: [
+        { id:'g1', type:'single', typeName:'单选题', question:'《社会保险法》自（ ）起施行。', options:['2010年7月1日','2011年1月1日','2011年7月1日','2012年1月1日'], answer:[2], analysis:'《中华人民共和国社会保险法》由第十一届全国人民代表大会常务委员会第十七次会议于2010年10月28日通过，自2011年7月1日起施行。' },
+        { id:'g2', type:'single', typeName:'单选题', question:'社保基金监督的基本原则是（ ）。', options:['独立性、客观性、公正性','全面性、系统性、及时性','合法性、合规性、效益性','以上都是'], answer:[3], analysis:'社保基金监督应遵循独立性、客观性、公正性、全面性、系统性、及时性、合法性、合规性和效益性等基本原则。' },
+        { id:'g3', type:'single', typeName:'单选题', question:'社会保险基金预算草案由（ ）编制。', options:['社会保险经办机构','税务部门','财政部门','社会保险经办机构会同税务、财政部门'], answer:[3], analysis:'社会保险基金预算草案由社会保险经办机构会同税务、财政部门编制，经本级政府审定后报同级人大审批。' },
+        { id:'g4', type:'single', typeName:'单选题', question:'社保基金银行存款实行（ ）管理。', options:['专户','一般账户','临时账户','基本账户'], answer:[0], analysis:'社保基金银行存款实行财政专户管理，确保基金安全和专款专用。' },
+        { id:'g5', type:'multi', typeName:'多选题', question:'社保基金现场监督的主要方法包括（ ）。', options:['听取汇报','查阅资料','实地核查','询问相关人员'], answer:[0,1,2,3], analysis:'现场监督可通过听取汇报、查阅资料、实地核查、询问相关人员等多种方法进行。' },
+        { id:'g6', type:'multi', typeName:'多选题', question:'社保基金内部控制的基本原则包括（ ）。', options:['合法性原则','完整性原则','制衡性原则','有效性原则'], answer:[0,1,2,3], analysis:'社保基金内部控制应遵循合法性、完整性、制衡性和有效性等基本原则。' },
+        { id:'g7', type:'multi', typeName:'多选题', question:'社保基金风险预警指标通常包括（ ）。', options:['基金备付能力指标','基金收支平衡指标','违规问题发生率','基金收益率'], answer:[0,1,2,3], analysis:'社保基金风险预警应涵盖基金备付能力、收支平衡、违规问题发生率和基金收益率等多维度指标。' },
+        { id:'g8', type:'judge', typeName:'判断题', question:'社会保险基金实行收支两条线管理，纳入财政专户，专款专用。', options:['正确','错误'], answer:[0], analysis:'《社会保险基金财务制度》规定，社会保险基金实行收支两条线管理，纳入财政专户，专款专用，任何组织和个人不得侵占挪用。' },
+        { id:'g9', type:'judge', typeName:'判断题', question:'社会保险行政部门对社会保险基金的收支、管理和投资运营情况进行监督检查时，发现存在问题的，应当提出整改建议，依法作出处理决定或者向有关行政部门提出处理建议。', options:['正确','错误'], answer:[0], analysis:'《社会保险法》第七十九条规定，社会保险行政部门对社会保险基金进行监督检查，发现问题的，应当提出整改建议，依法作出处理决定或向有关行政部门提出处理建议。' },
+        { id:'g10', type:'judge', typeName:'判断题', question:'社保基金监督举报实行实名举报制度，匿名举报不予受理。', options:['正确','错误'], answer:[1], analysis:'社保基金监督举报不强制要求实名，匿名举报同样受理，但实名举报便于核查和反馈处理结果。' },
+        { id:'g11', type:'single', typeName:'单选题', question:'根据《江西省社会保险基金普通要情报告制度》，普通要情是指涉及基金金额（）的，以及金额虽未达到此标准但被立案审查调查侦查的。', options:['5000元以上、10万元以下','1万元以上（含）、50万元以下','5万元以上（含）、100万元以下','10万元以上（含）、50万元以下'], answer:[1], analysis:'《江西省社会保险基金普通要情报告制度》第三条规定，普通要情是指涉及基金金额1万元以上（含）、50万元以下的，以及金额虽未达到1万元，但是被立案审查调查侦查的。' },
+        { id:'g12', type:'single', typeName:'单选题', question:'发生《江西省社会保险基金普通要情报告制度》第五条规定情形的普通要情，应当在发现要情（）个工作日内报送书面的普通要情发现报告。', options:['2个','3个','5个','10个'], answer:[2], analysis:'《江西省社会保险基金普通要情报告制度》第六条规定，发生第五条规定情形的普通要情，应当在发现要情5个工作日内向同级人力资源社会保障行政部门报送书面的普通要情发现报告。' },
+        { id:'g13', type:'single', typeName:'单选题', question:'县（市、区）人力资源社会保障行政部门收到普通要情报告后，应在（）个工作日内上报至所在设区市人力资源社会保障行政部门。', options:['2个','3个','5个','10个'], answer:[2], analysis:'《江西省社会保险基金普通要情报告制度》第十条规定，县（市、区）人力资源社会保障行政部门收到普通要情的统计报表及书面发现报告、终结报告后，应在5个工作日内上报至所在设区市人力资源社会保障行政部门。' },
+        { id:'g14', type:'single', typeName:'单选题', question:'普通要情终结报告应当在要情终结后（）个工作日内报送。', options:['5个','10个','15个','20个'], answer:[1], analysis:'《江西省社会保险基金普通要情报告制度》第六条规定，发生第五条规定情形的普通要情，应当在要情终结后10个工作日内报送终结报告。' },
+        { id:'g15', type:'single', typeName:'单选题', question:'因管理不善或操作错误导致错发、多发基金累计（）的，纳入普通要情年度统计报表范围。', options:['10万元以下','20万元以下','50万元以下','100万元以下'], answer:[1], analysis:'《江西省社会保险基金普通要情报告制度》第四条第（二）项规定，因管理不善或操作错误导致错发、多发基金累计20万元以下的，纳入普通要情年度统计报表范围。' },
+        { id:'g16', type:'multi', typeName:'多选题', question:'符合下列哪些情形的，纳入普通要情年度统计报表范围？', options:['死亡冒领或重复领取个人待遇累计24个月以下，或者涉及基金20万元以下的','因管理不善或操作错误导致错发、多发基金累计20万元以下的','社会保险经办机构挪用基金的','涉及基金金额在1万元以下但被立案审查调查侦查的'], answer:[0,1], analysis:'《江西省社会保险基金普通要情报告制度》第四条规定，死亡冒领或重复领取个人待遇累计24个月以下或涉及基金20万元以下的，以及因管理不善或操作错误导致错发、多发基金累计20万元以下的，纳入普通要情年度统计报表范围。C、D属于第五条规定的应当及时书面报告的情形。' },
+        { id:'g17', type:'multi', typeName:'多选题', question:'除纳入年度统计报表外，还应当及时书面报告要情的情形包括哪些？', options:['死亡冒领或重复领取个人待遇累计24个月以上（含），或者涉及基金20万元以上（含）不足50万元','因管理不善或操作错误导致错发、多发基金累计20万元以上（含）不足50万元','社会保险经办机构挪用基金的','涉及基金金额在50万元以下，被人力资源社会保障行政部门或社会保险经办机构依法处理，且不属于重大要情的'], answer:[0,1,2,3], analysis:'《江西省社会保险基金普通要情报告制度》第五条规定了上述四种情形，除纳入普通要情年度统计报表范围报告外，还应当及时书面报告要情。' },
+        { id:'g18', type:'multi', typeName:'多选题', question:'普通要情发现报告应当包括以下哪些主要内容？', options:['要情基本情况','初步处理情况和应对措施','原因分析及经验教训','报告单位、联系人和联系电话'], answer:[0,1,3], analysis:'《江西省社会保险基金普通要情报告制度》第七条规定，普通要情发现报告应当包括要情基本情况、初步处理情况和应对措施、其他需要报告或说明的情况、报告单位联系人和联系电话。原因分析及经验教训属于终结报告内容。' },
+        { id:'g19', type:'multi', typeName:'多选题', question:'普通要情终结报告应当包括以下哪些主要内容？', options:['要情详细情况','涉案基金处理情况','责任主体及对责任人的处理（处罚、处分）情况','改进和加强基金管理风险防控的措施及落实情况'], answer:[0,1,2,3], analysis:'《江西省社会保险基金普通要情报告制度》第九条规定，普通要情终结报告应当包括要情详细情况、涉案基金处理情况、责任主体及对责任人的处理情况、遗留问题和事项及解决办法或方案、原因分析及经验教训、改进和加强基金管理风险防控的措施及落实情况等。' },
+        { id:'g20', type:'multi', typeName:'多选题', question:'应当及时报送书面的普通要情终结报告的条件包括哪些？', options:['人力资源社会保障行政部门、社会保险经办机构已依法履行相关职责','要情或案情已查清','已梳理管理漏洞并采取相应防范措施','基金已全额追回，或者基金虽未全额追回但已进入司法机关法定追退程序'], answer:[0,1,2,3], analysis:'《江西省社会保险基金普通要情报告制度》第八条规定，同时符合人力资源社会保障行政部门和社会保险经办机构已依法履行相关职责、要情或案情已查清、已梳理管理漏洞并采取相应防范措施、已作出行政处理处罚或已进入纪检监察司法诉讼程序、基金已全额追回或虽未全额追回但已进入司法机关法定追退程序等条件的，应当及时报送书面的普通要情终结报告。' },
+        { id:'g21', type:'judge', typeName:'判断题', question:'《江西省社会保险基金普通要情报告制度》适用于本省行政区域内发现的基本养老、失业和工伤保险等社会保险基金及企业（职业）年金基金普通要情的报告活动。', options:['正确','错误'], answer:[0], analysis:'《江西省社会保险基金普通要情报告制度》第二条规定，本制度适用于本省行政区域内发现的基本养老、失业和工伤保险等社会保险基金及企业（职业）年金基金普通要情的报告活动。' },
+        { id:'g22', type:'judge', typeName:'判断题', question:'普通要情是指涉及基金金额1万元以上（含）、50万元以下的，以及金额虽未达到1万元，但是被立案审查调查侦查的。', options:['正确','错误'], answer:[0], analysis:'《江西省社会保险基金普通要情报告制度》第三条规定，普通要情是指涉及基金金额1万元以上（含）、50万元以下的，以及金额虽未达到1万元，但是被立案审查调查侦查的。' },
+        { id:'g23', type:'judge', typeName:'判断题', question:'死亡冒领或重复领取个人待遇累计24个月以下，或者涉及基金20万元以下的，应当及时书面报告要情。', options:['正确','错误'], answer:[1], analysis:'《江西省社会保险基金普通要情报告制度》第四条规定，死亡冒领或重复领取个人待遇累计24个月以下，或者涉及基金20万元以下的，纳入普通要情年度统计报表范围，以报表形式进行报告，不需要及时书面报告。' },
+        { id:'g24', type:'judge', typeName:'判断题', question:'设区市人力资源社会保障行政部门应当在收到普通要情报告后的5日内报送至省人力资源社会保障厅基金监督处。', options:['正确','错误'], answer:[0], analysis:'《江西省社会保险基金普通要情报告制度》第十条规定，设区市人力资源社会保障行政部门应当在收到普通要情的统计报表及书面发现报告、终结报告后的5日内报送至省人力资源社会保障厅基金监督处。' },
+        { id:'g25', type:'judge', typeName:'判断题', question:'社会保险经办机构挪用基金的，除纳入普通要情年度统计报表范围报告外，还应当及时书面报告要情。', options:['正确','错误'], answer:[0], analysis:'《江西省社会保险基金普通要情报告制度》第五条第（三）项规定，社会保险经办机构挪用基金的，除纳入普通要情年度统计报表范围报告外，还应当及时书面报告要情。' },
+        { id:'g26', type:'single', typeName:'单选题', question:'根据《江西省社会保险基金监督举报工作管理实施办法》，人力资源社会保障行政部门应当自受理举报事项之日起（）个工作日内办结举报事项。', options:['30个','60个','90个','120个'], answer:[1], analysis:'《江西省社会保险基金监督举报工作管理实施办法》第二十八条规定，人力资源社会保障行政部门应当自受理举报事项之日起60个工作日内办结举报事项；情况复杂的，经人力资源社会保障行政部门负责人批准，可以适当延长，但延长期限不得超过30个工作日。' },
+        { id:'g27', type:'single', typeName:'单选题', question:'根据《江西省社会保险基金监督举报工作管理实施办法》，人力资源社会保障行政部门应当自接收举报事项之日起（）个工作日内，作出受理或不予受理的决定。', options:['5个','10个','15个','20个'], answer:[1], analysis:'《江西省社会保险基金监督举报工作管理实施办法》第二十二条规定，人力资源社会保障行政部门应当自接收举报事项之日起10个工作日内，作出受理或不予受理的决定。' },
+        { id:'g28', type:'single', typeName:'单选题', question:'根据《江西省社会保险基金监督举报工作管理实施办法》，上级人力资源社会保障行政部门对举报办理存在推诿、敷衍、拖延等情形的，应当于（）个工作日内发送督办函。', options:['3个','5个','7个','10个'], answer:[2], analysis:'《江西省社会保险基金监督举报工作管理实施办法》第二十七条规定，承办单位有下列情形之一的，上级人力资源社会保障行政部门应当于7个工作日内发送《江西省社会保险基金监督举报督办函》。' },
+        { id:'g29', type:'single', typeName:'单选题', question:'根据《江西省社会保险基金监督举报工作管理实施办法》，被督办单位应当（）个工作日内向督办单位书面报告进展情况。', options:['5个','10个','15个','20个'], answer:[1], analysis:'《江西省社会保险基金监督举报工作管理实施办法》第二十七条规定，被督办单位应当10个工作日内向督办单位书面报告进展情况，落实工作责任，改进查办工作。' },
+        { id:'g30', type:'single', typeName:'单选题', question:'根据《江西省社会保险基金监督举报工作管理实施办法》，实名举报人可以要求告知举报事项的办理结果，人力资源社会保障行政部门可以视具体情况采取（）方式告知。', options:['口头方式','书面方式','口头或书面方式','电子邮件方式'], answer:[2], analysis:'《江西省社会保险基金监督举报工作管理实施办法》第三十一条规定，实名举报人可以要求告知举报事项的办理结果，人力资源社会保障行政部门可以视具体情况采取口头或者书面方式告知实名举报人。' },
+        { id:'g31', type:'multi', typeName:'多选题', question:'根据《江西省社会保险基金监督举报工作管理实施办法》，举报事项存在下列哪些情形的，不予受理？', options:['不符合受理条件的','无法确定被举报人的','对已经办结的同一举报事项再次举报且没有提供新的有效线索的','举报事项涉及多个地区的'], answer:[0,1,2], analysis:'《江西省社会保险基金监督举报工作管理实施办法》第二十一条规定了不予受理的情形：不符合受理条件、无法确定被举报人、对已经办结的同一举报事项再次举报且没有提供新的有效线索的等。举报事项涉及多个地区的不属于不予受理情形。' },
+        { id:'g32', type:'multi', typeName:'多选题', question:'根据《江西省社会保险基金监督举报工作管理实施办法》，办理举报事项中涉及异地调查的，可以怎么做？', options:['向当地人力资源社会保障行政部门提出协助请求','协助事项属于被请求部门职责范围内的，应当依法予以协助','涉及其他部门、机构职责的，可以会同相关部门、机构共同办理','直接移交当地公安机关处理'], answer:[0,1,2], analysis:'《江西省社会保险基金监督举报工作管理实施办法》第二十四条、第二十五条规定，办理举报事项中涉及异地调查的，可以向当地人力资源社会保障行政部门提出协助请求；涉及其他部门、机构职责的，可以会同相关部门、机构共同办理。' },
+        { id:'g33', type:'judge', typeName:'判断题', question:'根据《江西省社会保险基金监督举报工作管理实施办法》，举报人捏造、歪曲事实，诬告陷害他人的，依法承担法律责任。', options:['正确','错误'], answer:[0], analysis:'《江西省社会保险基金监督举报工作管理实施办法》第四十一条规定，举报人捏造、歪曲事实，诬告陷害他人的，依法承担法律责任。' },
+        { id:'g34', type:'single', typeName:'单选题', question:'根据《江西省社会保险基金监督举报奖励实施细则》，举报奖励最高不超过（）万元。', options:['5','10','20','50'], answer:[1], analysis:'《江西省社会保险基金监督举报奖励实施细则》第十五条规定，人力资源社会保障行政部门对符合奖励条件的举报人按案值金额奖励资金按照分段累计的办法计算给予一次性奖金奖励，最高不超过10万元，最低不少于200元。' },
+        { id:'g35', type:'single', typeName:'单选题', question:'根据《江西省社会保险基金监督举报奖励实施细则》，查证属实的违法违规金额在100万元（含）以下的，奖励比例为（）。', options:['1%','1.5%','2%','2.5%'], answer:[2], analysis:'《江西省社会保险基金监督举报奖励实施细则》第十五条规定，查证属实的违法违规金额在100万元（含）以下的奖励2%，100万元至300万元（含）奖励1.5%，300万元以上奖励1%。' },
+        { id:'g36', type:'single', typeName:'单选题', question:'根据《江西省社会保险基金监督举报奖励实施细则》，举报人为社会保险服务机构内部人员或原内部人员的，各分段奖励比例提高（）个百分点。', options:['0.3','0.5','1','1.5'], answer:[1], analysis:'《江西省社会保险基金监督举报奖励实施细则》第十五条规定，举报人为医疗机构、工伤康复机构、工伤保险辅助器具配置机构、劳动能力鉴定机构等社会保险服务机构内部人员或原内部人员的，各分段奖励比例提高0.5个百分点。' },
+        { id:'g37', type:'single', typeName:'单选题', question:'根据《江西省社会保险基金监督举报奖励实施细则》，举报人应当自接到举报奖励通知书之日起（）日内提供相关资料。', options:['15日','30日','60日','90日'], answer:[1], analysis:'《江西省社会保险基金监督举报奖励实施细则》第十七条规定，举报人应当自接到《江西省社会保险基金监督举报奖励通知书》之日起30日内，填写并向负责发放举报奖金的人力资源社会保障行政部门提供相关资料。逾期未提供的，视为主动放弃举报奖金。' },
+        { id:'g38', type:'multi', typeName:'多选题', question:'根据《江西省社会保险基金监督举报奖励实施细则》，举报事项存在下列哪些情形的，不纳入奖励范围？', options:['无明确举报对象或经查证无违法违规行为的','举报已受理或已办结且原处理程序及结论均符合规定的','依法通过诉讼、仲裁等法定途径判决裁定的','不属于本细则规定举报奖励事项的'], answer:[0,1,2,3], analysis:'《江西省社会保险基金监督举报奖励实施细则》第八条规定了不纳入奖励范围的六种情形，包括无明确举报对象、举报已受理或已办结且符合规定、依法通过诉讼仲裁等法定途径判决裁定、不属于本细则规定举报奖励事项等。' },
+        { id:'g39', type:'multi', typeName:'多选题', question:'根据《江西省社会保险基金监督举报奖励实施细则》，举报人和举报事项同时符合下列哪些情形的，给予奖励？', options:['举报人具有完全民事行为能力','举报事项符合本细则规定的举报奖励范围','举报情况经查证属实并结案','举报人必须是实名举报'], answer:[0,1,2], analysis:'《江西省社会保险基金监督举报奖励实施细则》第十三条规定，举报人和举报事项同时符合举报人具有完全民事行为能力、举报事项符合本细则规定的举报奖励范围、举报情况经查证属实并结案等情形的，给予奖励。奖励对象原则上应为实名举报者，但并非绝对要求。' },
+        { id:'g40', type:'judge', typeName:'判断题', question:'根据《江西省社会保险基金监督举报奖励实施细则》，举报奖金原则上应当使用非现金的方式兑付，通过举报人的社会保障卡或本人其他银行卡发放。', options:['正确','错误'], answer:[0], analysis:'《江西省社会保险基金监督举报奖励实施细则》第十九条规定，举报奖金原则上应当使用非现金的方式兑付，通过举报人的社会保障卡或本人其他银行卡发放，按国库集中支付规定办理。' },
+        { id:'g41', type:'single', typeName:'单选题', question:'根据《江西省社会保险基金监督约谈实施办法》，社会保险基金监督约谈应当遵循的原则不包括（）。', options:['依法依规','问题导向','警示提醒','从严从重'], answer:[3], analysis:'《江西省社会保险基金监督约谈实施办法》第三条规定，社会保险基金监督约谈应当遵循依法依规、问题导向、警示提醒的原则。' },
+        { id:'g42', type:'single', typeName:'单选题', question:'根据《江西省社会保险基金监督约谈实施办法》，《社会保险基金监督约谈通知书》应当于约谈前（）个工作日送达约谈对象。', options:['3个','5个','7个','10个'], answer:[1], analysis:'《江西省社会保险基金监督约谈实施办法》第九条规定，《社会保险基金监督约谈通知书》应当于约谈前5个工作日送达约谈对象。' },
+        { id:'g43', type:'single', typeName:'单选题', question:'根据《江西省社会保险基金监督约谈实施办法》，约谈情况应当形成《社会保险基金监督约谈纪要》，于约谈后（）个工作日内发约谈对象。', options:['5个','10个','15个','20个'], answer:[1], analysis:'《江西省社会保险基金监督约谈实施办法》第十一条规定，约谈情况应当形成《社会保险基金监督约谈纪要》，于约谈后10个工作日内发约谈对象，视情抄送约谈对象地方人民政府。' },
+        { id:'g44', type:'single', typeName:'单选题', question:'根据《江西省社会保险基金监督约谈实施办法》，约谈对象应当制定整改方案，于约谈后（）个工作日内以书面形式报约谈主体。', options:['5个','10个','15个','20个'], answer:[2], analysis:'《江西省社会保险基金监督约谈实施办法》第十二条规定，约谈对象应当制定整改方案，于约谈后15个工作日内以书面形式报约谈主体，并在约谈纪要确定的时间内完成整改，报送整改报告。' },
+        { id:'g45', type:'single', typeName:'单选题', question:'根据《江西省社会保险基金监督约谈实施办法》，各设区市、县（市、区）人力资源社会保障行政部门约谈情况应在约谈后（）个工作日内逐级上报至省人力资源社会保障厅基金监督处。', options:['10个','15个','20个','30个'], answer:[2], analysis:'《江西省社会保险基金监督约谈实施办法》第十七条规定，各设区市、县（市、区）人力资源社会保障行政部门按照管理权限，依照本办法开展本地区社会保险基金监督约谈工作。约谈情况应在约谈后20个工作日内逐级上报至省人力资源社会保障厅基金监督处。' },
+        { id:'g46', type:'multi', typeName:'多选题', question:'根据《江西省社会保险基金监督约谈实施办法》，存在下列哪些情形的，应当按本办法规定实施约谈？', options:['发生社会保险基金重大案件，涉案基金数额巨大，影响恶劣的','同一地区一年内发生两次以上内部工作人员侵占社会保险基金重大案件的','对巡视、巡察、审计等发现的社会保险基金管理重大问题拒不整改的','发生社会保险基金重大要情后隐瞒不报、谎报或者拖延不报的'], answer:[0,1,2,3], analysis:'《江西省社会保险基金监督约谈实施办法》第六条规定了应当实施约谈的五种情形，包括发生重大案件、一年内发生两次以上内部人员侵占案件、对发现问题拒不整改、隐瞒不报谎报或拖延不报等。' },
+        { id:'g47', type:'multi', typeName:'多选题', question:'根据《江西省社会保险基金监督约谈实施办法》，被约谈人有下列哪些情形的，人力资源社会保障行政部门可函询、通报或者向有关设区市、县（市、区）人民政府提出处理建议？', options:['无故不参加约谈的','推诿、抵制、拖延和干扰约谈的','拒不整改、无故拖延不改、整改不力的','对约谈人或举报人实施打击报复的'], answer:[0,1,2,3], analysis:'《江西省社会保险基金监督约谈实施办法》第十三条规定，被约谈人有无故不参加约谈、推诿抵制拖延干扰约谈、拒不整改无故拖延不改整改不力、对约谈人或举报人实施打击报复等情形的，人力资源社会保障行政部门可函询、通报或者向有关设区市、县（市、区）人民政府提出处理建议。' },
+        { id:'g48', type:'judge', typeName:'判断题', question:'根据《江西省社会保险基金监督约谈实施办法》，在约谈纪要确定的时间内未完成整改的单位或个人，取消其人力资源社会保障系统内年度评先评优的评比资格。', options:['正确','错误'], answer:[0], analysis:'《江西省社会保险基金监督约谈实施办法》第十六条规定，在约谈纪要确定的时间内未完成整改的单位或个人，取消其人力资源社会保障系统内年度评先评优的评比资格。' }
+    ]
+};
+
+// ===================== 状态管理 =====================
+let currentSubject = '';
+let currentMode = '';
+let currentQuestions = [];
+let currentIndex = 0;
+let userAnswers = {};
+let examTimer = null;
+let examTimeLeft = 0;
+let isAnswered = false;
+let submittedAnswers = new Set(); // 记录已显式提交的题目ID（用于多选题）
+let startTime = 0; // 记录答题开始时间
+let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+let wrongQuestions = JSON.parse(localStorage.getItem('wrongQuestions') || '[]');
+let historyRecords = JSON.parse(localStorage.getItem('history') || '[]');
+
+// ===================== 初始化 =====================
+function init() {
+    renderSubjectGrid();
+    updateCounts();
+}
+
+function renderSubjectGrid() {
+    const grid = document.getElementById('subject-grid');
+    grid.innerHTML = Object.entries(subjects).map(([key, s]) => {
+        const count = questionBank[key]?.length || 0;
+        return `<div class="subject-item" onclick="selectSubject('${key}')">
+            <div class="icon">${s.icon}</div>
+            <div class="name">${s.name}</div>
+            <div class="count">${count}题 · ${s.desc}</div>
+        </div>`;
+    }).join('');
+}
+
+function updateCounts() {
+    document.getElementById('wrong-count').textContent = wrongQuestions.length;
+    document.getElementById('fav-count').textContent = favorites.length;
+}
+
+// ===================== 页面切换 =====================
+function showPage(pageId) {
+    ['page-home','page-mode','page-practice','page-result','page-wrong','page-fav','page-history','page-about'].forEach(id => {
+        document.getElementById(id).classList.add('hidden');
+    });
+    document.getElementById(pageId).classList.remove('hidden');
+    window.scrollTo(0,0);
+}
+
+function goHome() {
+    clearInterval(examTimer);
+    document.getElementById('exam-timer')?.remove();
+    showPage('page-home');
+    updateCounts();
+}
+
+function selectSubject(key) {
+    currentSubject = key;
+    const s = subjects[key];
+    document.getElementById('mode-title').textContent = s.name;
+    showPage('page-mode');
+}
+
+function showAbout() {
+    showPage('page-about');
+}
+
+// ===================== 开始练习 =====================
+function startPractice(mode) {
+    currentMode = mode;
+    const bank = questionBank[currentSubject] || [];
+    currentQuestions = mode === 'random' ? shuffleArray([...bank]) : [...bank];
+    currentIndex = 0;
+    userAnswers = {};
+    isAnswered = false;
+    submittedAnswers = new Set();
+    startTime = Date.now();
+
+    document.getElementById('practice-title').textContent = mode === 'random' ? '随机刷题' : '顺序练习';
+    document.getElementById('submit-btn').classList.add('hidden');
+    document.getElementById('exam-timer')?.classList?.add('hidden');
+
+    showPage('page-practice');
+    renderQuestion();
+}
+
+function startExam() {
+    currentMode = 'exam';
+    const bank = questionBank[currentSubject] || [];
+    currentQuestions = shuffleArray([...bank]).slice(0, 20);
+    if (currentQuestions.length < 20) currentQuestions = [...bank];
+    currentIndex = 0;
+    userAnswers = {};
+    isAnswered = false;
+    submittedAnswers = new Set();
+    examTimeLeft = 20 * 60;
+    startTime = Date.now();
+
+    document.getElementById('practice-title').textContent = '模拟考试';
+    document.getElementById('submit-btn').classList.remove('hidden');
+
+    showPage('page-practice');
+    renderQuestion();
+    startExamTimer();
+}
+
+function startExamTimer() {
+    let timerEl = document.getElementById('exam-timer');
+    if (!timerEl) {
+        timerEl = document.createElement('div');
+        timerEl.className = 'timer';
+        timerEl.id = 'exam-timer';
+        document.body.appendChild(timerEl);
+    }
+    timerEl.classList.remove('hidden');
+
+    updateTimerDisplay();
+    examTimer = setInterval(() => {
+        examTimeLeft--;
+        updateTimerDisplay();
+        if (examTimeLeft <= 0) {
+            clearInterval(examTimer);
+            finishExam();
+        }
+    }, 1000);
+}
+
+function updateTimerDisplay() {
+    const el = document.getElementById('exam-timer');
+    if (!el) return;
+    const m = Math.floor(examTimeLeft / 60);
+    const s = examTimeLeft % 60;
+    el.textContent = `${m}:${s.toString().padStart(2,'0')}`;
+    el.classList.toggle('warning', examTimeLeft < 300);
+}
+
+// ===================== 渲染题目 =====================
+function renderQuestion() {
+    const q = currentQuestions[currentIndex];
+    if (!q) return;
+
+    // 单选题/判断题：选择即提交；多选题：需显式提交后才算已答
+    isAnswered = q.type === 'multi' ? submittedAnswers.has(q.id) : !!userAnswers[q.id];
+
+    document.getElementById('q-type').textContent = q.typeName;
+    document.getElementById('q-type').className = 'type-tag ' + q.type;
+    document.getElementById('q-text').textContent = `${currentIndex + 1}. ${q.question}`;
+
+    const optsHtml = q.options.map((opt, idx) => {
+        let cls = 'option-item';
+        const selected = userAnswers[q.id]?.includes(idx);
+
+        if (isAnswered) {
+            cls += ' disabled';
+            if (q.answer.includes(idx)) cls += ' correct';
+            else if (selected) cls += ' wrong';
+        } else if (selected) {
+            cls += ' selected';
+        }
+
+        const label = q.type === 'judge' ? (idx === 0 ? 'A' : 'B') : String.fromCharCode(65 + idx);
+        return `<div class="${cls}" onclick="selectOption(${idx})" data-idx="${idx}">
+            <div class="opt-label">${label}</div>
+            <div>${opt}</div>
+        </div>`;
+    }).join('');
+    document.getElementById('q-options').innerHTML = optsHtml;
+
+    const analysisEl = document.getElementById('q-analysis');
+    if (isAnswered) {
+        analysisEl.classList.remove('hidden');
+        const ansLabels = q.answer.map(i => String.fromCharCode(65 + i)).join('、');
+        document.getElementById('analysis-answer').textContent = ansLabels;
+        document.getElementById('analysis-text').textContent = q.analysis;
+    } else {
+        analysisEl.classList.add('hidden');
+    }
+
+    const progress = ((currentIndex + 1) / currentQuestions.length) * 100;
+    document.getElementById('progress-fill').style.width = progress + '%';
+
+    document.getElementById('q-current-num').textContent = currentIndex + 1;
+    document.getElementById('q-total-num').textContent = currentQuestions.length;
+
+    const nextBtn = document.getElementById('next-btn');
+    if (currentIndex >= currentQuestions.length - 1) {
+        nextBtn.textContent = currentMode === 'exam' ? '交卷' : '完成';
+    } else {
+        nextBtn.textContent = '下一题';
+    }
+    // 已答过，或多选题已选至少一项，则下一题按钮可用
+    const hasSelected = userAnswers[q.id]?.length > 0;
+    nextBtn.disabled = !(isAnswered || (q.type === 'multi' && hasSelected));
+
+    // 第一题隐藏上一题按钮
+    document.getElementById('prev-btn').style.visibility = currentIndex === 0 ? 'hidden' : 'visible';
+
+    updateFavBtn();
+    updateQuestionNav();
+}
+
+// ===================== 题目导航 =====================
+function toggleQuestionNav() {
+    const overlay = document.getElementById('q-nav-overlay');
+    if (overlay.classList.contains('hidden')) {
+        renderQuestionNav();
+        overlay.classList.remove('hidden');
+    } else {
+        overlay.classList.add('hidden');
+    }
+}
+
+function hideQuestionNav(e) {
+    if (e.target.classList.contains('q-nav-overlay')) {
+        document.getElementById('q-nav-overlay').classList.add('hidden');
+    }
+}
+
+function hideQuestionNavDirect() {
+    document.getElementById('q-nav-overlay').classList.add('hidden');
+}
+
+function renderQuestionNav() {
+    const grid = document.getElementById('q-nav-grid');
+    grid.innerHTML = currentQuestions.map((q, idx) => {
+        const answered = q.type === 'multi' ? submittedAnswers.has(q.id) : !!userAnswers[q.id];
+        let cls = 'q-nav-item';
+        if (idx === currentIndex) cls += ' current';
+        if (answered) cls += ' answered';
+        return `<div class="${cls}" onclick="jumpToQuestion(${idx})">${idx + 1}</div>`;
+    }).join('');
+}
+
+function updateQuestionNav() {
+    const overlay = document.getElementById('q-nav-overlay');
+    if (!overlay.classList.contains('hidden')) {
+        renderQuestionNav();
+    }
+}
+
+function jumpToQuestion(idx) {
+    currentIndex = idx;
+    const q = currentQuestions[currentIndex];
+    isAnswered = q.type === 'multi' ? submittedAnswers.has(q.id) : !!userAnswers[q.id];
+    document.getElementById('q-nav-overlay').classList.add('hidden');
+    renderQuestion();
+    window.scrollTo(0, 0);
+}
+
+function selectOption(idx) {
+    if (isAnswered) return;
+    const q = currentQuestions[currentIndex];
+
+    if (q.type === 'multi') {
+        const current = userAnswers[q.id] || [];
+        const pos = current.indexOf(idx);
+        if (pos > -1) current.splice(pos, 1);
+        else current.push(idx);
+        userAnswers[q.id] = current;
+    } else {
+        userAnswers[q.id] = [idx];
+        checkAnswer(q, [idx]);
+    }
+
+    renderQuestion();
+}
+
+function checkAnswer(q, selected) {
+    isAnswered = true;
+    submittedAnswers.add(q.id);
+    const correct = q.answer.length === selected.length && q.answer.every(a => selected.includes(a));
+
+    if (!correct) {
+        if (!wrongQuestions.find(w => w.id === q.id)) {
+            wrongQuestions.push({ id: q.id, timestamp: Date.now() });
+            localStorage.setItem('wrongQuestions', JSON.stringify(wrongQuestions));
+        }
+    }
+
+    renderQuestion();
+}
+
+function prevQuestion() {
+    if (currentIndex <= 0) return;
+    currentIndex--;
+    const q = currentQuestions[currentIndex];
+    isAnswered = q.type === 'multi' ? submittedAnswers.has(q.id) : !!userAnswers[q.id];
+    renderQuestion();
+}
+
+function nextQuestion() {
+    const q = currentQuestions[currentIndex];
+    // 多选题未提交时，先提交再继续前进
+    if (!isAnswered && q.type === 'multi') {
+        const selected = userAnswers[q.id] || [];
+        if (selected.length === 0) return; // 未选任何选项，不操作
+        checkAnswer(q, selected);
+        // 提交后继续前进，不 return
+    }
+
+    if (currentIndex >= currentQuestions.length - 1) {
+        if (currentMode === 'exam') finishExam();
+        else finishPractice();
+        return;
+    }
+
+    currentIndex++;
+    const nextQ = currentQuestions[currentIndex];
+    isAnswered = nextQ.type === 'multi' ? submittedAnswers.has(nextQ.id) : !!userAnswers[nextQ.id];
+    renderQuestion();
+}
+
+// ===================== 收藏 =====================
+function toggleFavorite() {
+    const q = currentQuestions[currentIndex];
+    const idx = favorites.indexOf(q.id);
+    if (idx > -1) favorites.splice(idx, 1);
+    else favorites.push(q.id);
+    localStorage.setItem('favorites', JSON.stringify(favorites));
+    updateFavBtn();
+}
+
+function updateFavBtn() {
+    const q = currentQuestions[currentIndex];
+    const isFav = favorites.includes(q.id);
+    document.getElementById('fav-btn').textContent = (isFav ? '⭐' : '☆') + ' 收藏';
+}
+
+// ===================== 解析 =====================
+function showAnalysis() {
+    if (!isAnswered) { alert('请先选择答案后再查看解析'); return; }
+    document.getElementById('q-analysis').scrollIntoView({ behavior: 'smooth' });
+}
+
+// ===================== 完成/交卷 =====================
+function submitExam() {
+    document.getElementById('modal-submit').classList.remove('hidden');
+}
+
+function confirmSubmit() {
+    document.getElementById('modal-submit').classList.add('hidden');
+    finishExam();
+}
+
+function finishExam() {
+    clearInterval(examTimer);
+    document.getElementById('exam-timer')?.remove();
+    showResult();
+}
+
+function finishPractice() {
+    showResult();
+}
+
+function showResult() {
+    let correct = 0, wrong = 0;
+    currentQuestions.forEach(q => {
+        const ans = userAnswers[q.id] || [];
+        const isCorrect = q.answer.length === ans.length && q.answer.every(a => ans.includes(a));
+        if (isCorrect) correct++;
+        else wrong++;
+    });
+
+    const total = currentQuestions.length;
+    const score = total > 0 ? Math.round((correct / total) * 100) : 0;
+    const accuracy = total > 0 ? Math.round((correct / total) * 100) : 0;
+
+    // 得分颜色等级与评价
+    const scoreEl = document.getElementById('result-score');
+    const evaluateEl = document.getElementById('result-evaluate');
+    let level = 'fail';
+    let evaluateText = '继续加油';
+    if (score >= 90) { level = 'excellent'; evaluateText = '太棒了！'; }
+    else if (score >= 80) { level = 'good'; evaluateText = '表现不错'; }
+    else if (score >= 60) { level = 'pass'; evaluateText = '勉强及格'; }
+    scoreEl.className = 'score ' + level;
+    evaluateEl.className = 'result-evaluate ' + level;
+    evaluateEl.textContent = evaluateText;
+
+    // 基础数据
+    document.getElementById('result-score').textContent = score;
+    document.getElementById('result-total').textContent = total;
+    document.getElementById('result-correct').textContent = correct;
+    document.getElementById('result-wrong').textContent = wrong;
+    document.getElementById('result-accuracy').textContent = accuracy + '%';
+
+    // 答题用时
+    const elapsed = Math.floor((Date.now() - startTime) / 1000);
+    const m = Math.floor(elapsed / 60);
+    const s = elapsed % 60;
+    document.getElementById('result-time').textContent = m > 0 ? `${m}分${s}秒` : `${s}秒`;
+
+    // 科目与模式
+    document.getElementById('result-subject').textContent = subjects[currentSubject]?.name || '--';
+    const modeMap = { order: '顺序练习', random: '随机刷题', exam: '模拟考试', wrong: '错题回顾', fav: '收藏练习' };
+    document.getElementById('result-mode').textContent = modeMap[currentMode] || currentMode;
+
+    historyRecords.unshift({
+        subject: currentSubject,
+        mode: currentMode,
+        total, correct, wrong, score,
+        date: new Date().toLocaleString('zh-CN')
+    });
+    localStorage.setItem('history', JSON.stringify(historyRecords.slice(0, 50)));
+
+    showPage('page-result');
+}
+
+function reviewWrong() {
+    const wrongIds = wrongQuestions.map(w => w.id);
+    currentQuestions = [];
+    Object.values(questionBank).forEach(bank => {
+        bank.forEach(q => {
+            if (wrongIds.includes(q.id)) currentQuestions.push(q);
+        });
+    });
+    if (currentQuestions.length === 0) { alert('暂无错题'); return; }
+    currentMode = 'wrong';
+    currentIndex = 0;
+    userAnswers = {};
+    isAnswered = false;
+    submittedAnswers = new Set();
+    startTime = Date.now();
+    document.getElementById('practice-title').textContent = '错题回顾';
+    document.getElementById('submit-btn').classList.add('hidden');
+    showPage('page-practice');
+    renderQuestion();
+}
+
+// ===================== 错题本/收藏夹 =====================
+function getQuestionById(id) {
+    for (const bank of Object.values(questionBank)) {
+        const q = bank.find(item => item.id === id);
+        if (q) return q;
+    }
+    return null;
+}
+
+function getSubjectNameById(id) {
+    for (const [key, bank] of Object.entries(questionBank)) {
+        if (bank.find(item => item.id === id)) {
+            return subjects[key]?.name || '';
+        }
+    }
+    return '';
+}
+
+function goWrongBook() {
+    const list = document.getElementById('wrong-list');
+    if (wrongQuestions.length === 0) {
+        list.innerHTML = '<div class="empty-state"><div class="icon">📋</div><div>暂无错题，快去练习吧</div></div>';
+    } else {
+        list.innerHTML = wrongQuestions.map(w => {
+            const q = getQuestionById(w.id);
+            if (!q) return '';
+            const subName = getSubjectNameById(w.id);
+            return `<div class="list-item" onclick="startWrongPractice('${w.id}')">
+                <div class="q-text">${q.question}</div>
+                <div class="meta"><span>${q.typeName}</span><span>${subName}</span><span>答错时间：${new Date(w.timestamp).toLocaleDateString()}</span></div>
+            </div>`;
+        }).join('');
+    }
+    showPage('page-wrong');
+}
+
+function goFavorites() {
+    const list = document.getElementById('fav-list');
+    if (favorites.length === 0) {
+        list.innerHTML = '<div class="empty-state"><div class="icon">⭐</div><div>暂无收藏，做题时可收藏重点题目</div></div>';
+    } else {
+        list.innerHTML = favorites.map(fid => {
+            const q = getQuestionById(fid);
+            if (!q) return '';
+            const subName = getSubjectNameById(fid);
+            return `<div class="list-item" onclick="startFavPractice('${fid}')">
+                <div class="q-text">${q.question}</div>
+                <div class="meta"><span>${q.typeName}</span><span>${subName}</span></div>
+            </div>`;
+        }).join('');
+    }
+    showPage('page-fav');
+}
+
+function goHistory() {
+    const list = document.getElementById('history-list');
+    if (historyRecords.length === 0) {
+        list.innerHTML = '<div class="empty-state"><div class="icon">📊</div><div>暂无练习记录</div></div>';
+    } else {
+        list.innerHTML = historyRecords.map(h => {
+            const modeMap = { order: '顺序练习', random: '随机刷题', exam: '模拟考试', wrong: '错题回顾', fav: '收藏练习' };
+            const subName = subjects[h.subject]?.name || '';
+            return `<div class="list-item">
+                <div class="q-text">${subName} · ${modeMap[h.mode] || h.mode} · 得分 ${h.score}</div>
+                <div class="meta"><span>共${h.total}题</span><span>正确${h.correct}</span><span>错误${h.wrong}</span><span>${h.date}</span></div>
+            </div>`;
+        }).join('');
+    }
+    showPage('page-history');
+}
+
+function startWrongPractice(qid) {
+    const q = getQuestionById(qid);
+    if (!q) return;
+    currentQuestions = [q];
+    currentMode = 'wrong';
+    currentIndex = 0;
+    userAnswers = {};
+    isAnswered = false;
+    submittedAnswers = new Set();
+    startTime = Date.now();
+    document.getElementById('practice-title').textContent = '错题回顾';
+    document.getElementById('submit-btn').classList.add('hidden');
+    showPage('page-practice');
+    renderQuestion();
+}
+
+function startFavPractice(qid) {
+    const q = getQuestionById(qid);
+    if (!q) return;
+    currentQuestions = [q];
+    currentMode = 'fav';
+    currentIndex = 0;
+    userAnswers = {};
+    isAnswered = false;
+    submittedAnswers = new Set();
+    startTime = Date.now();
+    document.getElementById('practice-title').textContent = '收藏练习';
+    document.getElementById('submit-btn').classList.add('hidden');
+    showPage('page-practice');
+    renderQuestion();
+}
+
+// ===================== 退出确认 =====================
+function quitConfirm() {
+    document.getElementById('modal-quit').classList.remove('hidden');
+}
+
+function quitPractice() {
+    document.getElementById('modal-quit').classList.add('hidden');
+    clearInterval(examTimer);
+    document.getElementById('exam-timer')?.remove();
+
+    if (Object.keys(userAnswers).length > 0) {
+        historyRecords.unshift({
+            subject: currentSubject,
+            mode: currentMode,
+            total: currentQuestions.length,
+            correct: 0, wrong: 0, score: 0,
+            date: new Date().toLocaleString('zh-CN'),
+            note: '中途退出'
+        });
+        localStorage.setItem('history', JSON.stringify(historyRecords.slice(0, 50)));
+    }
+
+    goHome();
+}
+
+function hideModal(e) {
+    if (e.target.classList.contains('modal-overlay')) {
+        e.target.classList.add('hidden');
+    }
+}
+
+function hideModalDirect(id) {
+    document.getElementById(id).classList.add('hidden');
+}
+
+// ===================== 工具函数 =====================
+function shuffleArray(arr) {
+    const result = [...arr];
+    for (let i = result.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [result[i], result[j]] = [result[j], result[i]];
+    }
+    return result;
+}
+
+// ===================== 启动 =====================
+init();
+</script>
+</body>
+</html>
