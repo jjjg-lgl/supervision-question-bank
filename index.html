@@ -72,6 +72,7 @@
         .type-tag.single { background: #e6f7ff; color: #1890ff; }
         .type-tag.multi { background: #f6ffed; color: #52c41a; }
         .type-tag.judge { background: #fff7e6; color: #fa8c16; }
+        .type-tag.text { background: #f9f0ff; color: #722ed1; }
         .question-card .question-text { font-size: 15px; line-height: 1.7; margin-bottom: 16px; }
 
         .option-item {
@@ -256,6 +257,30 @@
         .mode-btn:active { background: #e8e8e8; }
         .mode-btn .emoji { font-size: 20px; }
 
+        /* 题型筛选 */
+        .type-filter-bar {
+            background: #fff; margin: 12px 16px 0; border-radius: 12px;
+            padding: 12px 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .type-filter-bar h3 { font-size: 15px; margin-bottom: 10px; }
+        .type-filter-tags {
+            display: flex; flex-wrap: wrap; gap: 8px;
+        }
+        .type-filter-tag {
+            padding: 6px 14px; border-radius: 16px; font-size: 13px;
+            background: #f5f5f5; color: #666; border: none; cursor: pointer;
+            transition: all 0.2s;
+        }
+        .type-filter-tag.active {
+            background: #1890ff; color: #fff;
+        }
+        .type-filter-tag.disabled {
+            background: #f0f0f0; color: #bbb; cursor: not-allowed;
+        }
+        .type-filter-tag .count {
+            font-size: 11px; opacity: 0.8; margin-left: 2px;
+        }
+
         /* 弹窗 */
         .modal-overlay {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
@@ -317,6 +342,16 @@
     <div class="nav-bar">
         <span class="back" onclick="goHome()">←</span>
         <h2 id="mode-title">选择练习模式</h2>
+    </div>
+    <div class="type-filter-bar">
+        <h3>题型筛选</h3>
+        <div class="type-filter-tags" id="type-filter-tags">
+            <button class="type-filter-tag active" onclick="selectTypeFilter('all')">全部</button>
+            <button class="type-filter-tag" onclick="selectTypeFilter('single')">单选题<span class="count" id="count-single"></span></button>
+            <button class="type-filter-tag" onclick="selectTypeFilter('multi')">多选题<span class="count" id="count-multi"></span></button>
+            <button class="type-filter-tag" onclick="selectTypeFilter('judge')">判断题<span class="count" id="count-judge"></span></button>
+            <button class="type-filter-tag" onclick="selectTypeFilter('text')">主观题<span class="count" id="count-text"></span></button>
+        </div>
     </div>
     <div class="mode-select">
         <h3>练习模式</h3>
@@ -663,6 +698,7 @@ let examTimeLeft = 0;
 let isAnswered = false;
 let submittedAnswers = new Set(); // 记录已显式提交的题目ID（用于多选题）
 let startTime = 0; // 记录答题开始时间
+let currentTypeFilter = 'all'; // 题型筛选：all/single/multi/judge/text
 let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
 let wrongQuestions = JSON.parse(localStorage.getItem('wrongQuestions') || '[]');
 let historyRecords = JSON.parse(localStorage.getItem('history') || '[]');
@@ -708,9 +744,50 @@ function goHome() {
 
 function selectSubject(key) {
     currentSubject = key;
+    currentTypeFilter = 'all';
     const s = subjects[key];
     document.getElementById('mode-title').textContent = s.name;
+    updateTypeFilterCounts();
+    // 重置筛选标签高亮
+    document.querySelectorAll('.type-filter-tag').forEach(btn => btn.classList.remove('active'));
+    document.querySelector('.type-filter-tag[onclick="selectTypeFilter(\'all\')"]').classList.add('active');
     showPage('page-mode');
+}
+
+function selectTypeFilter(type) {
+    // 如果标签被禁用，不允许选择
+    const btn = document.querySelector('.type-filter-tag[onclick="selectTypeFilter(\'' + type + '\')"]');
+    if (btn && btn.classList.contains('disabled')) return;
+    currentTypeFilter = type;
+    document.querySelectorAll('.type-filter-tag').forEach(b => b.classList.remove('active'));
+    document.querySelector('.type-filter-tag[onclick="selectTypeFilter(\'' + type + '\')"]').classList.add('active');
+}
+
+function updateTypeFilterCounts() {
+    const bank = questionBank[currentSubject] || [];
+    const counts = { single: 0, multi: 0, judge: 0, text: 0 };
+    bank.forEach(q => { if (counts[q.type] !== undefined) counts[q.type]++; });
+    const types = ['single', 'multi', 'judge', 'text'];
+    types.forEach(t => {
+        const countEl = document.getElementById('count-' + t);
+        const btn = document.querySelector('.type-filter-tag[onclick="selectTypeFilter(\'' + t + '\')"]');
+        if (counts[t] > 0) {
+            countEl.textContent = ' (' + counts[t] + ')';
+            btn.classList.remove('disabled');
+        } else {
+            countEl.textContent = '';
+            btn.classList.add('disabled');
+            // 如果当前选中的就是这个无题的筛选，自动切回全部
+            if (currentTypeFilter === t) {
+                selectTypeFilter('all');
+            }
+        }
+    });
+}
+
+function filterQuestionsByType(bank) {
+    if (currentTypeFilter === 'all') return [...bank];
+    return bank.filter(q => q.type === currentTypeFilter);
 }
 
 function showAbout() {
@@ -721,14 +798,20 @@ function showAbout() {
 function startPractice(mode) {
     currentMode = mode;
     const bank = questionBank[currentSubject] || [];
-    currentQuestions = mode === 'random' ? shuffleArray([...bank]) : [...bank];
+    const filtered = filterQuestionsByType(bank);
+    if (filtered.length === 0) {
+        alert('该科目下没有符合条件的题目');
+        return;
+    }
+    currentQuestions = mode === 'random' ? shuffleArray(filtered) : filtered;
     currentIndex = 0;
     userAnswers = {};
     isAnswered = false;
     submittedAnswers = new Set();
     startTime = Date.now();
 
-    document.getElementById('practice-title').textContent = mode === 'random' ? '随机刷题' : '顺序练习';
+    const typeLabel = currentTypeFilter === 'all' ? '' : getTypeFilterLabel(currentTypeFilter);
+    document.getElementById('practice-title').textContent = (mode === 'random' ? '随机刷题' : '顺序练习') + typeLabel;
     document.getElementById('submit-btn').classList.add('hidden');
     document.getElementById('exam-timer')?.classList?.add('hidden');
 
@@ -739,8 +822,13 @@ function startPractice(mode) {
 function startExam() {
     currentMode = 'exam';
     const bank = questionBank[currentSubject] || [];
-    currentQuestions = shuffleArray([...bank]).slice(0, 20);
-    if (currentQuestions.length < 20) currentQuestions = [...bank];
+    const filtered = filterQuestionsByType(bank);
+    if (filtered.length === 0) {
+        alert('该科目下没有符合条件的题目');
+        return;
+    }
+    currentQuestions = shuffleArray(filtered).slice(0, 20);
+    if (currentQuestions.length < 20) currentQuestions = filtered;
     currentIndex = 0;
     userAnswers = {};
     isAnswered = false;
@@ -748,12 +836,18 @@ function startExam() {
     examTimeLeft = 20 * 60;
     startTime = Date.now();
 
-    document.getElementById('practice-title').textContent = '模拟考试';
+    const typeLabel = currentTypeFilter === 'all' ? '' : getTypeFilterLabel(currentTypeFilter);
+    document.getElementById('practice-title').textContent = '模拟考试' + typeLabel;
     document.getElementById('submit-btn').classList.remove('hidden');
 
     showPage('page-practice');
     renderQuestion();
     startExamTimer();
+}
+
+function getTypeFilterLabel(type) {
+    const map = { single: '·单选', multi: '·多选', judge: '·判断', text: '·主观' };
+    return map[type] || '';
 }
 
 function startExamTimer() {
