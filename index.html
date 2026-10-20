@@ -102,12 +102,17 @@
         .btn-prev { background: #fff; color: #666; border: 1px solid #d9d9d9; }
         .btn-next:disabled { background: #bfbfbf; cursor: not-allowed; }
 
+        /* 答题结果提示 */
         /* 解析 */
         .analysis-box {
             background: #f6ffed; border: 1px solid #b7eb8f;
             border-radius: 8px; padding: 16px; margin-top: 16px;
         }
+        .analysis-box.wrong {
+            background: #fff1f0; border-color: #ffccc7;
+        }
         .analysis-box .title { color: #52c41a; font-weight: 600; font-size: 14px; margin-bottom: 8px; }
+        .analysis-box.wrong .title { color: #ff4d4f; }
         .analysis-box .content { font-size: 14px; color: #333; line-height: 1.6; }
         .analysis-box .answer { color: #1890ff; font-weight: 500; }
 
@@ -401,7 +406,7 @@
         <div class="question-text" id="q-text"></div>
         <div id="q-options"></div>
         <div class="analysis-box hidden" id="q-analysis">
-            <div class="title">答案解析</div>
+            <div class="title" id="analysis-title">答案解析</div>
             <div class="content">
                 正确答案：<span class="answer" id="analysis-answer"></span><br>
                 <span id="analysis-text"></span>
@@ -607,19 +612,10 @@ const questionBank = {
         { id:'g10', type:'judge', typeName:'判断题', question:'社保基金监督举报实行实名举报制度，匿名举报不予受理。', options:['正确','错误'], answer:[1], analysis:'社保基金监督举报不强制要求实名，匿名举报同样受理，但实名举报便于核查和反馈处理结果。' },
         { id:'g11', type:'single', typeName:'单选题', question:'根据《江西省社会保险基金普通要情报告制度》，普通要情是指涉及基金金额（）的，以及金额虽未达到此标准但被立案审查调查侦查的。', options:['5000元以上、10万元以下','1万元以上（含）、50万元以下','5万元以上（含）、100万元以下','10万元以上（含）、50万元以下'], answer:[1], analysis:'《江西省社会保险基金普通要情报告制度》第三条规定，普通要情是指涉及基金金额1万元以上（含）、50万元以下的，以及金额虽未达到1万元，但是被立案审查调查侦查的。' },
         { id:'g12', type:'single', typeName:'单选题', question:'发生《江西省社会保险基金普通要情报告制度》第五条规定情形的普通要情，应当在发现要情（）个工作日内报送书面的普通要情发现报告。', options:['2个','3个','5个','10个'], answer:[2], analysis:'《江西省社会保险基金普通要情报告制度》第六条规定，发生第五条规定情形的普通要情，应当在发现要情5个工作日内向同级人力资源社会保障行政部门报送书面的普通要情发现报告。' },
-        { id:'g13', type:'single', typeName:'单选题', question:'县（市、区）人力资源社会保障行政部门收到普通要情报告后，应在（）个工作日内上报至所在设区市人力资源社会保障行政部门。', options:['2个','3个','5个','10个'], answer:[2], analysis:'《江西省社会保险基金普通要情报告制度》第十条规定，县（市、区）人力资源社会保障行政部门收到普通要情的统计报表及书面发现报告、终结报告后，应在5个工作日内上报至所在设区市人力资源社会保障行政部门。' },
-        { id:'g14', type:'single', typeName:'单选题', question:'普通要情终结报告应当在要情终结后（）个工作日内报送。', options:['5个','10个','15个','20个'], answer:[1], analysis:'《江西省社会保险基金普通要情报告制度》第六条规定，发生第五条规定情形的普通要情，应当在要情终结后10个工作日内报送终结报告。' },
-        { id:'g15', type:'single', typeName:'单选题', question:'因管理不善或操作错误导致错发、多发基金累计（）的，纳入普通要情年度统计报表范围。', options:['10万元以下','20万元以下','50万元以下','100万元以下'], answer:[1], analysis:'《江西省社会保险基金普通要情报告制度》第四条第（二）项规定，因管理不善或操作错误导致错发、多发基金累计20万元以下的，纳入普通要情年度统计报表范围。' },
         { id:'g16', type:'multi', typeName:'多选题', question:'符合下列哪些情形的，纳入普通要情年度统计报表范围？', options:['死亡冒领或重复领取个人待遇累计24个月以下，或者涉及基金20万元以下的','因管理不善或操作错误导致错发、多发基金累计20万元以下的','社会保险经办机构挪用基金的','涉及基金金额在1万元以下但被立案审查调查侦查的'], answer:[0,1], analysis:'《江西省社会保险基金普通要情报告制度》第四条规定，死亡冒领或重复领取个人待遇累计24个月以下或涉及基金20万元以下的，以及因管理不善或操作错误导致错发、多发基金累计20万元以下的，纳入普通要情年度统计报表范围。C、D属于第五条规定的应当及时书面报告的情形。' },
         { id:'g17', type:'multi', typeName:'多选题', question:'除纳入年度统计报表外，还应当及时书面报告要情的情形包括哪些？', options:['死亡冒领或重复领取个人待遇累计24个月以上（含），或者涉及基金20万元以上（含）不足50万元','因管理不善或操作错误导致错发、多发基金累计20万元以上（含）不足50万元','社会保险经办机构挪用基金的','涉及基金金额在50万元以下，被人力资源社会保障行政部门或社会保险经办机构依法处理，且不属于重大要情的'], answer:[0,1,2,3], analysis:'《江西省社会保险基金普通要情报告制度》第五条规定了上述四种情形，除纳入普通要情年度统计报表范围报告外，还应当及时书面报告要情。' },
-        { id:'g18', type:'multi', typeName:'多选题', question:'普通要情发现报告应当包括以下哪些主要内容？', options:['要情基本情况','初步处理情况和应对措施','原因分析及经验教训','报告单位、联系人和联系电话'], answer:[0,1,3], analysis:'《江西省社会保险基金普通要情报告制度》第七条规定，普通要情发现报告应当包括要情基本情况、初步处理情况和应对措施、其他需要报告或说明的情况、报告单位联系人和联系电话。原因分析及经验教训属于终结报告内容。' },
         { id:'g19', type:'multi', typeName:'多选题', question:'普通要情终结报告应当包括以下哪些主要内容？', options:['要情详细情况','涉案基金处理情况','责任主体及对责任人的处理（处罚、处分）情况','改进和加强基金管理风险防控的措施及落实情况'], answer:[0,1,2,3], analysis:'《江西省社会保险基金普通要情报告制度》第九条规定，普通要情终结报告应当包括要情详细情况、涉案基金处理情况、责任主体及对责任人的处理情况、遗留问题和事项及解决办法或方案、原因分析及经验教训、改进和加强基金管理风险防控的措施及落实情况等。' },
-        { id:'g20', type:'multi', typeName:'多选题', question:'应当及时报送书面的普通要情终结报告的条件包括哪些？', options:['人力资源社会保障行政部门、社会保险经办机构已依法履行相关职责','要情或案情已查清','已梳理管理漏洞并采取相应防范措施','基金已全额追回，或者基金虽未全额追回但已进入司法机关法定追退程序'], answer:[0,1,2,3], analysis:'《江西省社会保险基金普通要情报告制度》第八条规定，同时符合人力资源社会保障行政部门和社会保险经办机构已依法履行相关职责、要情或案情已查清、已梳理管理漏洞并采取相应防范措施、已作出行政处理处罚或已进入纪检监察司法诉讼程序、基金已全额追回或虽未全额追回但已进入司法机关法定追退程序等条件的，应当及时报送书面的普通要情终结报告。' },
-        { id:'g21', type:'judge', typeName:'判断题', question:'《江西省社会保险基金普通要情报告制度》适用于本省行政区域内发现的基本养老、失业和工伤保险等社会保险基金及企业（职业）年金基金普通要情的报告活动。', options:['正确','错误'], answer:[0], analysis:'《江西省社会保险基金普通要情报告制度》第二条规定，本制度适用于本省行政区域内发现的基本养老、失业和工伤保险等社会保险基金及企业（职业）年金基金普通要情的报告活动。' },
         { id:'g22', type:'judge', typeName:'判断题', question:'普通要情是指涉及基金金额1万元以上（含）、50万元以下的，以及金额虽未达到1万元，但是被立案审查调查侦查的。', options:['正确','错误'], answer:[0], analysis:'《江西省社会保险基金普通要情报告制度》第三条规定，普通要情是指涉及基金金额1万元以上（含）、50万元以下的，以及金额虽未达到1万元，但是被立案审查调查侦查的。' },
-        { id:'g23', type:'judge', typeName:'判断题', question:'死亡冒领或重复领取个人待遇累计24个月以下，或者涉及基金20万元以下的，应当及时书面报告要情。', options:['正确','错误'], answer:[1], analysis:'《江西省社会保险基金普通要情报告制度》第四条规定，死亡冒领或重复领取个人待遇累计24个月以下，或者涉及基金20万元以下的，纳入普通要情年度统计报表范围，以报表形式进行报告，不需要及时书面报告。' },
-        { id:'g24', type:'judge', typeName:'判断题', question:'设区市人力资源社会保障行政部门应当在收到普通要情报告后的5日内报送至省人力资源社会保障厅基金监督处。', options:['正确','错误'], answer:[0], analysis:'《江西省社会保险基金普通要情报告制度》第十条规定，设区市人力资源社会保障行政部门应当在收到普通要情的统计报表及书面发现报告、终结报告后的5日内报送至省人力资源社会保障厅基金监督处。' },
-        { id:'g25', type:'judge', typeName:'判断题', question:'社会保险经办机构挪用基金的，除纳入普通要情年度统计报表范围报告外，还应当及时书面报告要情。', options:['正确','错误'], answer:[0], analysis:'《江西省社会保险基金普通要情报告制度》第五条第（三）项规定，社会保险经办机构挪用基金的，除纳入普通要情年度统计报表范围报告外，还应当及时书面报告要情。' },
         { id:'g26', type:'single', typeName:'单选题', question:'根据《江西省社会保险基金监督举报工作管理实施办法》，人力资源社会保障行政部门应当自受理举报事项之日起（）个工作日内办结举报事项。', options:['30个','60个','90个','120个'], answer:[1], analysis:'《江西省社会保险基金监督举报工作管理实施办法》第二十八条规定，人力资源社会保障行政部门应当自受理举报事项之日起60个工作日内办结举报事项；情况复杂的，经人力资源社会保障行政部门负责人批准，可以适当延长，但延长期限不得超过30个工作日。' },
         { id:'g27', type:'single', typeName:'单选题', question:'根据《江西省社会保险基金监督举报工作管理实施办法》，人力资源社会保障行政部门应当自接收举报事项之日起（）个工作日内，作出受理或不予受理的决定。', options:['5个','10个','15个','20个'], answer:[1], analysis:'《江西省社会保险基金监督举报工作管理实施办法》第二十二条规定，人力资源社会保障行政部门应当自接收举报事项之日起10个工作日内，作出受理或不予受理的决定。' },
         { id:'g28', type:'single', typeName:'单选题', question:'根据《江西省社会保险基金监督举报工作管理实施办法》，上级人力资源社会保障行政部门对举报办理存在推诿、敷衍、拖延等情形的，应当于（）个工作日内发送督办函。', options:['3个','5个','7个','10个'], answer:[2], analysis:'《江西省社会保险基金监督举报工作管理实施办法》第二十七条规定，承办单位有下列情形之一的，上级人力资源社会保障行政部门应当于7个工作日内发送《江西省社会保险基金监督举报督办函》。' },
@@ -643,6 +639,39 @@ const questionBank = {
         { id:'g46', type:'multi', typeName:'多选题', question:'根据《江西省社会保险基金监督约谈实施办法》，存在下列哪些情形的，应当按本办法规定实施约谈？', options:['发生社会保险基金重大案件，涉案基金数额巨大，影响恶劣的','同一地区一年内发生两次以上内部工作人员侵占社会保险基金重大案件的','对巡视、巡察、审计等发现的社会保险基金管理重大问题拒不整改的','发生社会保险基金重大要情后隐瞒不报、谎报或者拖延不报的'], answer:[0,1,2,3], analysis:'《江西省社会保险基金监督约谈实施办法》第六条规定了应当实施约谈的五种情形，包括发生重大案件、一年内发生两次以上内部人员侵占案件、对发现问题拒不整改、隐瞒不报谎报或拖延不报等。' },
         { id:'g47', type:'multi', typeName:'多选题', question:'根据《江西省社会保险基金监督约谈实施办法》，被约谈人有下列哪些情形的，人力资源社会保障行政部门可函询、通报或者向有关设区市、县（市、区）人民政府提出处理建议？', options:['无故不参加约谈的','推诿、抵制、拖延和干扰约谈的','拒不整改、无故拖延不改、整改不力的','对约谈人或举报人实施打击报复的'], answer:[0,1,2,3], analysis:'《江西省社会保险基金监督约谈实施办法》第十三条规定，被约谈人有无故不参加约谈、推诿抵制拖延干扰约谈、拒不整改无故拖延不改整改不力、对约谈人或举报人实施打击报复等情形的，人力资源社会保障行政部门可函询、通报或者向有关设区市、县（市、区）人民政府提出处理建议。' },
         { id:'g48', type:'judge', typeName:'判断题', question:'根据《江西省社会保险基金监督约谈实施办法》，在约谈纪要确定的时间内未完成整改的单位或个人，取消其人力资源社会保障系统内年度评先评优的评比资格。', options:['正确','错误'], answer:[0], analysis:'《江西省社会保险基金监督约谈实施办法》第十六条规定，在约谈纪要确定的时间内未完成整改的单位或个人，取消其人力资源社会保障系统内年度评先评优的评比资格。' },
+        // ===== 新增：约谈实施办法补充题目 =====
+        { id:'g49', type:'single', typeName:'单选题', question:'根据《江西省社会保险基金监督约谈实施办法》，约谈主体为（）。', options:['县级以上人力资源社会保障行政部门','市级以上人力资源社会保障行政部门','省级人力资源社会保障行政部门','各级人力资源社会保障行政部门'], answer:[0], analysis:'《江西省社会保险基金监督约谈实施办法》第四条规定，约谈主体为县级以上人力资源社会保障行政部门。' },
+        { id:'g50', type:'multi', typeName:'多选题', question:'根据《江西省社会保险基金监督约谈实施办法》，约谈可以采取哪些形式？', options:['个别约谈','集中约谈','电话约谈','视频约谈'], answer:[0,1], analysis:'《江西省社会保险基金监督约谈实施办法》第七条规定，约谈采取会议形式组织实施，可以个别约谈和集中约谈。' },
+        // ===== 新增：人社部发〔2020〕21号 要情报告制度（重大要情为重点） =====
+        { id:'g51', type:'single', typeName:'单选题', question:'根据《社会保险基金要情报告制度》，重大要情是指涉及基金金额（）以上的。', options:['10万元（含）','30万元（含）','50万元（含）','100万元（含）'], answer:[2], analysis:'《社会保险基金要情报告制度》第六条规定，重大要情是指涉及基金金额50万元以上（含）的。' },
+        { id:'g52', type:'single', typeName:'单选题', question:'根据《社会保险基金要情报告制度》，市、县级发生重大要情的，应当在发现（）个工作日内，同时报告上一级、省级人力资源社会保障行政部门。', options:['3个','5个','7个','10个'], answer:[1], analysis:'《社会保险基金要情报告制度》第九条规定，市、县级发生重大要情的，应当在发现5个工作日内，同时报告上一级、省级人力资源社会保障行政部门。' },
+        { id:'g53', type:'single', typeName:'单选题', question:'根据《社会保险基金要情报告制度》，省级人力资源社会保障行政部门应当在收到下级重大要情发现报告（）个工作日内，报告人力资源社会保障部社会保险基金监管局。', options:['1个','3个','5个','10个'], answer:[1], analysis:'《社会保险基金要情报告制度》第九条规定，省级人力资源社会保障行政部门应当在收到下级重大要情发现报告3个工作日内，报告人力资源社会保障部社会保险基金监管局。' },
+        { id:'g54', type:'single', typeName:'单选题', question:'根据《社会保险基金要情报告制度》，省级人力资源社会保障行政部门应当在确定重大要情处置终结后（）个工作日内，将重大要情终结报告报送人力资源社会保障部社会保险基金监管局。', options:['5个','10个','15个','20个'], answer:[1], analysis:'《社会保险基金要情报告制度》第十五条规定，省级人力资源社会保障行政部门应当在确定要情处置终结10个工作日内，将重大要情终结报告报送人力资源社会保障部社会保险基金监管局。情况复杂的，可以适当延长报告时限，最长不超过20个工作日。' },
+        { id:'g55', type:'multi', typeName:'多选题', question:'根据《社会保险基金要情报告制度》，金额虽未达到50万元，但属于重大要情的情形包括哪些？', options:['涉及社会保险工作人员贪污挪用骗取基金被立案审查调查侦查的','涉及3人以上（含）团伙作案的','涉及个人50人以上（含）的','涉及单位3个以上（含）的'], answer:[0,1,2,3], analysis:'《社会保险基金要情报告制度》第六条第（二）项规定，金额虽未达到50万元，但涉及社会保险工作人员贪污挪用骗取基金被立案审查调查侦查的，或者涉及3人以上（含）团伙作案的，或者涉及个人50人以上（含）的，或者涉及单位3个以上（含）的，或者其他性质严重并造成恶劣影响的，属于重大要情。' },
+        { id:'g56', type:'multi', typeName:'多选题', question:'根据《社会保险基金要情报告制度》，要情发现途径包括哪些？', options:['人力资源社会保障行政部门或其委托机构监督检查','经办机构审核和稽核内审内控检查','媒体披露、受理举报投诉','审计机关审计、纪检监察机关立案审查调查'], answer:[0,1,2,3], analysis:'《社会保险基金要情报告制度》第五条规定，要情发现途径包括人力资源社会保障行政部门或其委托机构监督检查、经办机构审核和稽核内审内控检查、媒体披露、受理举报投诉、审计机关审计、其他行政部门监督检查、纪检监察机关立案审查调查、公安机关立案侦查、法院立案审理及其他方式和渠道等。' },
+        { id:'g57', type:'multi', typeName:'多选题', question:'根据《社会保险基金要情报告制度》，重大要情发现报告内容主要包括哪些？', options:['要情基本情况','初步处理情况和应对措施','报告单位联系人和联系电话','原因分析及经验教训'], answer:[0,1,2], analysis:'《社会保险基金要情报告制度》第十一条规定，重大要情发现报告内容主要包括要情基本情况、初步处理情况和应对措施、其他需要报告或说明的情况、报告单位和联系人及联系电话。原因分析及经验教训属于终结报告内容。' },
+        { id:'g58', type:'judge', typeName:'判断题', question:'根据《社会保险基金要情报告制度》，对于同批查处、属于同一经办机构经办管理、涉及多人采取同种类型违法违规行为的要情，原则上合并报告，合计涉及金额或者对象数达到重大要情标准的，应当按照重大要情管理。', options:['正确','错误'], answer:[0], analysis:'《社会保险基金要情报告制度》第七条规定，对于同批查处、属于同一经办机构经办管理、涉及多人采取同种类型违法违规行为的要情，原则上合并报告，合计涉及金额或者对象数达到重大要情标准的，应当按照重大要情管理。' },
+        { id:'g59', type:'judge', typeName:'判断题', question:'根据《社会保险基金要情报告制度》，对于涉及多个单位或者个人同案或者并案处理的要情，符合重大要情标准的应当按照重大要情管理，不得任意拆分为普通要情管理。', options:['正确','错误'], answer:[0], analysis:'《社会保险基金要情报告制度》第七条规定，对于涉及多个单位或者个人同案或者并案处理的要情，符合重大要情标准的应当按照重大要情管理，不得任意拆分为普通要情管理。' },
+        { id:'g60', type:'judge', typeName:'判断题', question:'根据《社会保险基金要情报告制度》，无要情发生的无需报送年度要情情况报告。', options:['正确','错误'], answer:[1], analysis:'《社会保险基金要情报告制度》第十八条规定，无要情发生的也要报零报告。' },
+        // ===== 新增：关于健全完善社会保险基金管理风险防控体系的意见 =====
+        { id:'g61', type:'single', typeName:'单选题', question:'《关于健全完善社会保险基金管理风险防控体系的意见》提出，健全完善政策、经办、信息、监督、宣传"五位一体"的社会保险基金管理风险防控体系，强化"四防"协同。其中"四防"是指（）。', options:['人防、制防、技防、群防','人防、物防、技防、群防','人防、制防、物防、群防','人防、制防、技防、物防'], answer:[0], analysis:'《关于健全完善社会保险基金管理风险防控体系的意见》一、总体要求提出，强化人防、制防、技防、群防"四防"协同。' },
+        { id:'g62', type:'single', typeName:'单选题', question:'《关于健全完善社会保险基金管理风险防控体系的意见》提出，各级人社部门应按照（）原则，将风险防控贯穿制度建设和业务管理全过程各方面。', options:['管业务必须管安全','管政策必须管风险、管业务必须管安全','谁主管谁负责','安全第一、预防为主'], answer:[1], analysis:'《关于健全完善社会保险基金管理风险防控体系的意见》二、（一）提出，各级人社部门应按照"管政策必须管风险、管业务必须管安全"原则，将风险防控贯穿制度建设和业务管理全过程各方面。' },
+        { id:'g63', type:'single', typeName:'单选题', question:'《关于健全完善社会保险基金管理风险防控体系的意见》提出，推动全面实现中高风险业务市域（）审核。', options:['全覆盖','双随机','专项','定期'], answer:[1], analysis:'《关于健全完善社会保险基金管理风险防控体系的意见》二、（二）提出，推动全面实现中高风险业务市域"双随机"审核。' },
+        { id:'g64', type:'single', typeName:'单选题', question:'《关于健全完善社会保险基金管理风险防控体系的意见》提出，各级人社部门应全面开通（）热线受理投诉举报。', options:['12315或12345','12333或12345','12333或12315','12345或12315'], answer:[1], analysis:'《关于健全完善社会保险基金管理风险防控体系的意见》四、（十四）提出，各级人社部门应全面开通12333或12345热线受理投诉举报。' },
+        { id:'g65', type:'multi', typeName:'多选题', question:'《关于健全完善社会保险基金管理风险防控体系的意见》提出，严格落实哪些内控要求，杜绝一人通办？', options:['不相容岗位分离','权限制衡','人员轮岗','双人复核'], answer:[0,1,2], analysis:'《关于健全完善社会保险基金管理风险防控体系的意见》二、（二）提出，推动内控措施进程序、进系统，严格落实不相容岗位分离、权限制衡、人员轮岗等内控要求，杜绝一人通办。' },
+        { id:'g66', type:'multi', typeName:'多选题', question:'《关于健全完善社会保险基金管理风险防控体系的意见》提出，压实整改责任的方式包括哪些？', options:['工作提示','函询','约谈','通报'], answer:[0,1,2,3], analysis:'《关于健全完善社会保险基金管理风险防控体系的意见》三、（八）提出，通过工作提示、函询、约谈、通报、调研回访等方式，压实整改责任。' },
+        { id:'g67', type:'judge', typeName:'判断题', question:'《关于健全完善社会保险基金管理风险防控体系的意见》提出，涉嫌社会保险欺诈犯罪的，应当及时移送公安机关；涉嫌挪用贪占社会保险基金的，要坚决移送纪检监察机关。', options:['正确','错误'], answer:[0], analysis:'《关于健全完善社会保险基金管理风险防控体系的意见》三、（九）提出，涉嫌社会保险欺诈犯罪的，应当及时移送公安机关，不得应移不移、以退代罚；涉嫌挪用贪占社会保险基金的，要坚决移送纪检监察机关。' },
+        { id:'g68', type:'judge', typeName:'判断题', question:'《关于健全完善社会保险基金管理风险防控体系的意见》提出，发生重大案件的地方，人力资源社会保障部门主要负责同志要靠前指挥，统筹协调相关工作力量，提升办案质效。', options:['正确','错误'], answer:[0], analysis:'《关于健全完善社会保险基金管理风险防控体系的意见》三、（六）提出，发生重大案件的地方，人力资源社会保障部门主要负责同志要靠前指挥，统筹协调相关工作力量，提升办案质效。' },
+        // ===== 新增：约谈实施办法补充题目（第二批） =====
+        { id:'g69', type:'single', typeName:'单选题', question:'根据《江西省社会保险基金监督约谈实施办法》，约谈采取（）形式组织实施。', options:['电话','视频','会议','书面'], answer:[2], analysis:'《江西省社会保险基金监督约谈实施办法》第七条规定，约谈采取会议形式组织实施。' },
+        { id:'g70', type:'single', typeName:'单选题', question:'根据《江西省社会保险基金监督约谈实施办法》，如提前送达约谈通知对约谈工作有不利影响，经人力资源社会保障行政部门负责同志批准，可以（）。', options:['取消约谈','推迟约谈','直接约谈','电话约谈'], answer:[2], analysis:'《江西省社会保险基金监督约谈实施办法》第九条规定，如提前送达约谈通知对约谈工作有不利影响，经人力资源社会保障行政部门负责同志批准，可以直接约谈。' },
+        { id:'g71', type:'single', typeName:'单选题', question:'根据《江西省社会保险基金监督约谈实施办法》，约谈方案内容不包括（）。', options:['约谈时间、地点','约谈事由','整改落实情况','通报问题、整改意见'], answer:[2], analysis:'《江西省社会保险基金监督约谈实施办法》第八条规定，约谈方案包括但不限于约谈时间、地点、事由、约谈人、约谈对象、通报问题、整改意见等内容。整改落实情况属于约谈后跟踪的内容，不在方案中。' },
+        { id:'g72', type:'multi', typeName:'多选题', question:'根据《江西省社会保险基金监督约谈实施办法》，约谈时应当（）。', options:['向被约谈人通报约谈事由','指出存在的主要问题','提出整改意见','要求被约谈人当场缴纳罚款'], answer:[0,1,2], analysis:'《江西省社会保险基金监督约谈实施办法》第十条规定，约谈时应当向被约谈人通报约谈事由、指出存在的主要问题、提出整改意见。被约谈人应当就约谈事项说明情况，并对整改作出表态。约谈不涉及当场罚款。' },
+        { id:'g73', type:'multi', typeName:'多选题', question:'根据《江西省社会保险基金监督约谈实施办法》，社会保险基金监督机构具体负责约谈的哪些工作？', options:['提出约谈建议','制定约谈方案','组织实施约谈','约谈材料的整理归档'], answer:[0,1,2,3], analysis:'《江西省社会保险基金监督约谈实施办法》第四条、第八条、第十四条规定，社会保险基金监督机构具体负责提出约谈建议、制定约谈方案、组织实施约谈、做好约谈材料的整理归档等工作。' },
+        { id:'g74', type:'multi', typeName:'多选题', question:'根据《江西省社会保险基金监督约谈实施办法》，约谈主体对约谈对象的整改落实情况进行跟踪、督促的方式包括（）。', options:['函询','通报','现场检查','罚款'], answer:[0,1,2], analysis:'《江西省社会保险基金监督约谈实施办法》第十五条规定，约谈主体对约谈对象的整改落实情况进行跟踪、督促，必要时进行现场检查。第十三条还规定可函询、通报或者向有关人民政府提出处理建议。' },
+        { id:'g75', type:'judge', typeName:'判断题', question:'根据《江西省社会保险基金监督约谈实施办法》，约谈方案报人力资源社会保障行政部门负责同志批准后实施约谈。', options:['正确','错误'], answer:[0], analysis:'《江西省社会保险基金监督约谈实施办法》第八条规定，社会保险基金监督机构提出约谈建议，制定约谈方案，报人力资源社会保障行政部门负责同志批准后实施约谈。' },
+        { id:'g76', type:'judge', typeName:'判断题', question:'根据《江西省社会保险基金监督约谈实施办法》，约谈对象应当制定整改方案，于约谈后10个工作日内以书面形式报约谈主体。', options:['正确','错误'], answer:[1], analysis:'《江西省社会保险基金监督约谈实施办法》第十二条规定，约谈对象应当制定整改方案，于约谈后15个工作日内以书面形式报约谈主体，而非10个工作日。' },
+        { id:'g77', type:'judge', typeName:'判断题', question:'根据《江西省社会保险基金监督约谈实施办法》，各设区市、县（市、区）人力资源社会保障行政部门约谈情况应在约谈后15个工作日内逐级上报至省人力资源社会保障厅基金监督处。', options:['正确','错误'], answer:[1], analysis:'《江西省社会保险基金监督约谈实施办法》第十七条规定，约谈情况应在约谈后20个工作日内逐级上报至省人力资源社会保障厅基金监督处，而非15个工作日。' },
         // ===== 2026年江西省社保基金监督检查证取证试卷题目 =====
         // 一、单选题（15道）
         { id:'s1', type:'single', typeName:'单选题', question:'《社会保险法》规定，（ ）成立社会保险监督委员会，掌握、分析社会保险基金的收支、管理和投资运营情况，对社会保险工作提出咨询意见和建议，实施社会监督。', options:['社会保险行政部门','工会','人民代表大会常务委员会','统筹地区人民政府'], answer:[3], analysis:'《社会保险法》第八十条规定，统筹地区人民政府成立由用人单位代表、参保人员代表，以及工会代表、专家等组成的社会保险监督委员会，掌握、分析社会保险基金的收支、管理和投资运营情况，对社会保险工作提出咨询意见和建议，实施社会监督。' },
@@ -822,9 +851,9 @@ function startPractice(mode) {
 function startExam() {
     currentMode = 'exam';
     const bank = questionBank[currentSubject] || [];
-    const filtered = filterQuestionsByType(bank);
+    const filtered = filterQuestionsByType(bank).filter(q => q.type !== 'text');
     if (filtered.length === 0) {
-        alert('该科目下没有符合条件的题目');
+        alert('该科目下没有符合条件的客观题，无法进行模拟考试');
         return;
     }
     currentQuestions = shuffleArray(filtered).slice(0, 20);
@@ -885,8 +914,13 @@ function renderQuestion() {
     const q = currentQuestions[currentIndex];
     if (!q) return;
 
-    // 单选题/判断题：选择即提交；多选题：需显式提交后才算已答；主观题：点击"查看答案"后算已答
-    isAnswered = q.type === 'multi' ? submittedAnswers.has(q.id) : (q.type === 'text' ? submittedAnswers.has(q.id) : !!userAnswers[q.id]);
+    // 单选题/判断题：练习模式下选择即提交；考试模式下选择不算提交（可修改）
+    // 多选题：需显式提交后才算已答；主观题：点击"查看答案"后算已答
+    if (currentMode === 'exam') {
+        isAnswered = submittedAnswers.has(q.id);
+    } else {
+        isAnswered = q.type === 'multi' ? submittedAnswers.has(q.id) : (q.type === 'text' ? submittedAnswers.has(q.id) : !!userAnswers[q.id]);
+    }
 
     document.getElementById('q-type').textContent = q.typeName;
     document.getElementById('q-type').className = 'type-tag ' + q.type;
@@ -908,8 +942,14 @@ function renderQuestion() {
 
             if (isAnswered) {
                 cls += ' disabled';
-                if (q.answer.includes(idx)) cls += ' correct';
-                else if (selected) cls += ' wrong';
+                // 考试模式下不显示正确答案和错误答案的颜色标记
+                if (currentMode !== 'exam') {
+                    if (q.answer.includes(idx)) cls += ' correct';
+                    else if (selected) cls += ' wrong';
+                } else if (selected) {
+                    // 考试模式下保留用户选择的蓝色高亮，让用户知道选了什么
+                    cls += ' selected';
+                }
             } else if (selected) {
                 cls += ' selected';
             }
@@ -923,19 +963,33 @@ function renderQuestion() {
     }
     document.getElementById('q-options').innerHTML = optsHtml;
 
+    // 答案解析仅在练习模式下显示，考试模式交卷后才显示
     const analysisEl = document.getElementById('q-analysis');
-    if (isAnswered) {
+    const analysisTitle = document.getElementById('analysis-title');
+    if (isAnswered && currentMode !== 'exam') {
         analysisEl.classList.remove('hidden');
         if (q.type === 'text') {
+            analysisTitle.textContent = '参考答案';
+            analysisEl.classList.remove('wrong');
             document.getElementById('analysis-answer').textContent = '参考答案';
             document.getElementById('analysis-text').innerHTML = q.analysis.replace(/\n/g, '<br>');
         } else {
+            const ans = userAnswers[q.id] || [];
+            const isCorrect = q.answer.length === ans.length && q.answer.every(a => ans.includes(a));
+            if (isCorrect) {
+                analysisTitle.textContent = '✅ 回答正确';
+                analysisEl.classList.remove('wrong');
+            } else {
+                analysisTitle.textContent = '❌ 回答错误';
+                analysisEl.classList.add('wrong');
+            }
             const ansLabels = q.answer.map(i => String.fromCharCode(65 + i)).join('、');
             document.getElementById('analysis-answer').textContent = ansLabels;
             document.getElementById('analysis-text').textContent = q.analysis;
         }
     } else {
         analysisEl.classList.add('hidden');
+        analysisEl.classList.remove('wrong');
     }
 
     const progress = ((currentIndex + 1) / currentQuestions.length) * 100;
@@ -951,8 +1005,10 @@ function renderQuestion() {
         nextBtn.textContent = '下一题';
     }
     // 已答过，或多选题已选至少一项，或主观题，则下一题按钮可用
+    // 考试模式下只要有选择即可进入下一题
     const hasSelected = userAnswers[q.id]?.length > 0;
-    nextBtn.disabled = !(isAnswered || (q.type === 'multi' && hasSelected) || q.type === 'text');
+    const canNext = currentMode === 'exam' ? hasSelected : (isAnswered || (q.type === 'multi' && hasSelected) || q.type === 'text');
+    nextBtn.disabled = !canNext;
 
     // 第一题隐藏上一题按钮
     document.getElementById('prev-btn').style.visibility = currentIndex === 0 ? 'hidden' : 'visible';
@@ -985,7 +1041,8 @@ function hideQuestionNavDirect() {
 function renderQuestionNav() {
     const grid = document.getElementById('q-nav-grid');
     grid.innerHTML = currentQuestions.map((q, idx) => {
-        const answered = q.type === 'multi' || q.type === 'text' ? submittedAnswers.has(q.id) : !!userAnswers[q.id];
+        // 考试模式下只要有选择即算已答；练习模式按原有逻辑
+        const answered = currentMode === 'exam' ? !!userAnswers[q.id] : (q.type === 'multi' || q.type === 'text' ? submittedAnswers.has(q.id) : !!userAnswers[q.id]);
         let cls = 'q-nav-item';
         if (idx === currentIndex) cls += ' current';
         if (answered) cls += ' answered';
@@ -1003,7 +1060,11 @@ function updateQuestionNav() {
 function jumpToQuestion(idx) {
     currentIndex = idx;
     const q = currentQuestions[currentIndex];
-    isAnswered = q.type === 'multi' || q.type === 'text' ? submittedAnswers.has(q.id) : !!userAnswers[q.id];
+    if (currentMode === 'exam') {
+        isAnswered = submittedAnswers.has(q.id);
+    } else {
+        isAnswered = q.type === 'multi' || q.type === 'text' ? submittedAnswers.has(q.id) : !!userAnswers[q.id];
+    }
     document.getElementById('q-nav-overlay').classList.add('hidden');
     renderQuestion();
     window.scrollTo(0, 0);
@@ -1021,7 +1082,10 @@ function selectOption(idx) {
         userAnswers[q.id] = current;
     } else {
         userAnswers[q.id] = [idx];
-        checkAnswer(q, [idx]);
+        // 练习模式下选择即提交；考试模式下只记录答案，不交卷前可修改
+        if (currentMode !== 'exam') {
+            checkAnswer(q, [idx]);
+        }
     }
 
     renderQuestion();
@@ -1045,19 +1109,21 @@ function checkAnswer(q, selected) {
 function prevQuestion() {
     if (currentIndex <= 0) return;
     currentIndex--;
-    const q = currentQuestions[currentIndex];
-    isAnswered = q.type === 'multi' || q.type === 'text' ? submittedAnswers.has(q.id) : !!userAnswers[q.id];
+    // 返回上一题时，不自动显示答案和解析，让用户可以重新思考
+    isAnswered = false;
     renderQuestion();
 }
 
 function nextQuestion() {
     const q = currentQuestions[currentIndex];
-    // 多选题未提交时，先提交再继续前进
-    if (!isAnswered && q.type === 'multi') {
+    // 多选题未提交时，先提交并停留当前题，让用户查看答案和解析
+    // 仅在练习模式下生效，考试模式下直接前进
+    if (!isAnswered && q.type === 'multi' && currentMode !== 'exam') {
         const selected = userAnswers[q.id] || [];
         if (selected.length === 0) return; // 未选任何选项，不操作
         checkAnswer(q, selected);
-        // 提交后继续前进，不 return
+        renderQuestion(); // 重新渲染显示答案和解析
+        return; // 停留当前题，不自动前进
     }
 
     if (currentIndex >= currentQuestions.length - 1) {
@@ -1067,8 +1133,8 @@ function nextQuestion() {
     }
 
     currentIndex++;
-    const nextQ = currentQuestions[currentIndex];
-    isAnswered = nextQ.type === 'multi' || nextQ.type === 'text' ? submittedAnswers.has(nextQ.id) : !!userAnswers[nextQ.id];
+    // 进入下一题时，重置为未作答状态（不自动显示答案）
+    isAnswered = false;
     renderQuestion();
 }
 
